@@ -1,7 +1,7 @@
 import unittest
 
 import security
-from generator import HTMLGenerator
+from generator import HTMLConverter, HTMLGenerator
 from models import (
     AccordionBlock,
     AlertBlock,
@@ -50,9 +50,7 @@ class TestBootstrapGenerator(unittest.TestCase):
         self.assertIn('src="http://example.com/bild.jpg"', rendered_html)
         self.assertIn('class="btn btn-success"', rendered_html)
         self.assertIn('class="alert alert-warning"', rendered_html)
-        self.assertIn(
-            '<span class="badge bg-primary">Custom HTML</span>', rendered_html
-        )
+        self.assertIn('<span class="badge bg-primary">Custom HTML</span>', rendered_html)
 
     def test_bootstrap_3_rendering(self):
         page = Page("BS3 Seite")
@@ -83,15 +81,9 @@ class TestBootstrapGenerator(unittest.TestCase):
         # Test serialization format
         self.assertEqual(data_dict["title"], "Speicher Test")
         self.assertEqual(len(data_dict["rows"]), 1)
-        self.assertEqual(
-            data_dict["rows"][0]["columns"][0]["elements"][0]["text"], "Persistenz Text"
-        )
-        self.assertEqual(
-            data_dict["rows"][0]["columns"][0]["elements"][1]["type"], "ButtonBlock"
-        )
-        self.assertEqual(
-            data_dict["rows"][0]["columns"][0]["elements"][2]["type"], "AlertBlock"
-        )
+        self.assertEqual(data_dict["rows"][0]["columns"][0]["elements"][0]["text"], "Persistenz Text")
+        self.assertEqual(data_dict["rows"][0]["columns"][0]["elements"][1]["type"], "ButtonBlock")
+        self.assertEqual(data_dict["rows"][0]["columns"][0]["elements"][2]["type"], "AlertBlock")
 
         # Test from_dict
         new_page = Page.from_dict(data_dict)
@@ -134,13 +126,9 @@ class TestBootstrapGenerator(unittest.TestCase):
         col = Column(12)
 
         col.add_element(TableBlock(headers=["A", "B"], rows=[["1", "2"]]))
-        col.add_element(
-            CardBlock(title="Card Header", content="Card Body", style="primary")
-        )
+        col.add_element(CardBlock(title="Card Header", content="Card Body", style="primary"))
         col.add_element(BadgeBlock(text="Neu", style="danger"))
-        col.add_element(
-            AccordionBlock(items=[{"title": "Acc 1", "content": "Inhalt 1"}])
-        )
+        col.add_element(AccordionBlock(items=[{"title": "Acc 1", "content": "Inhalt 1"}]))
         col.add_element(ListGroupBlock(items=["Punkt 1", "Punkt 2"]))
 
         row.add_column(col)
@@ -191,9 +179,7 @@ class TestBootstrapGenerator(unittest.TestCase):
         self.assertEqual(rows[0], ["Anna", "28", "Berlin"])
 
     def test_xss_protection(self):
-        img = ImageBlock(
-            url='http://test.de/" onload="alert(1)"', alt='Bild " onerror="alert(1)"'
-        )
+        img = ImageBlock(url='http://test.de/" onload="alert(1)"', alt='Bild " onerror="alert(1)"')
         rendered_img = img.render()
         self.assertNotIn('onload="alert(1)"', rendered_img)
         self.assertIn("&quot;", rendered_img)
@@ -233,7 +219,7 @@ class TestBootstrapGenerator(unittest.TestCase):
             <tr><td>Apfel, rot</td><td>1,50 €</td></tr>
         </table>
         """
-        html_headers, html_rows = HTMLConverter.parse_html_table(raw_table_html)
+        _html_headers, html_rows = HTMLConverter.parse_html_table(raw_table_html)
         self.assertEqual(html_rows[0], ["Apfel, rot", "1,50 €"])
 
         # Test pipe separator parsing
@@ -242,6 +228,36 @@ class TestBootstrapGenerator(unittest.TestCase):
             HTMLConverter.parse_table_line(pipe_line),
             ["Apfel", "1,50 €", "Auf Lager"],
         )
+
+    def test_parse_html_table_empty_and_broken(self):
+        # Leerer HTML-String
+        headers, rows = HTMLConverter.parse_html_table("")
+        self.assertEqual(headers, [])
+        self.assertEqual(rows, [])
+
+        # HTML ohne Tabellen-Tags
+        headers, rows = HTMLConverter.parse_html_table("<p>Keine Tabelle</p>")
+        self.assertEqual(headers, [])
+        self.assertEqual(rows, [])
+
+        # Tabelle nur mit Daten ohne TH
+        raw = "<table><tr><td>Nur Wert 1</td><td>Nur Wert 2</td></tr></table>"
+        headers, rows = HTMLConverter.parse_html_table(raw)
+        self.assertEqual(headers, [])
+        self.assertEqual(rows, [["Nur Wert 1", "Nur Wert 2"]])
+
+    def test_fix_html_syntax_edge_cases(self):
+        # Leerer String
+        code, repairs = HTMLConverter.fix_html_syntax("")
+        self.assertEqual(code, "")
+        self.assertEqual(repairs, [])
+
+        # Verschachtelte und ungeschlossene Tags
+        broken = "<div><p>Nicht geschlossen"
+        fixed, repairs = HTMLConverter.fix_html_syntax(broken)
+        self.assertTrue(len(repairs) > 0)
+        self.assertIn("</p>", fixed)
+        self.assertIn("</div>", fixed)
 
 
 if __name__ == "__main__":

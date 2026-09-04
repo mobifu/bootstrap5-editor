@@ -79,14 +79,12 @@ def decrypt_project(encrypted_content: bytes, password: str) -> dict:
         try:
             decrypted_data = aesgcm.decrypt(nonce, ciphertext, None)
             return json.loads(decrypted_data.decode("utf-8"))
-        except InvalidTag:
-            raise ValueError("Falsches Passwort oder beschädigte Datei.")
-        except (json.JSONDecodeError, UnicodeDecodeError):
-            raise ValueError("Entschlüsselte Daten sind kein gültiges JSON-Format.")
-        except Exception:
-            raise ValueError(
-                "Fehler bei der Entschlüsselung. Bitte Passwort und Datei prüfen."
-            )
+        except InvalidTag as err:
+            raise ValueError("Falsches Passwort oder beschädigte Datei.") from err
+        except (json.JSONDecodeError, UnicodeDecodeError) as err:
+            raise ValueError("Entschlüsselte Daten sind kein gültiges JSON-Format.") from err
+        except Exception as err:
+            raise ValueError("Fehler bei der Entschlüsselung. Bitte Passwort und Datei prüfen.") from err
 
     # Legacy-Fallback: Fernet (AES-128-CBC + HMAC)
     salt = encrypted_content[:16]
@@ -98,11 +96,9 @@ def decrypt_project(encrypted_content: bytes, password: str) -> dict:
     try:
         decrypted_data = fernet.decrypt(actual_encrypted_data)
         return json.loads(decrypted_data.decode("utf-8"))
-    except (InvalidKey, InvalidToken):
-        raise ValueError("Falsches Passwort oder beschädigte Datei.")
-    except (json.JSONDecodeError, UnicodeDecodeError):
-        raise ValueError("Entschlüsselte Daten sind kein gültiges JSON-Format.")
-    except Exception:
-        raise ValueError(
-            "Fehler bei der Entschlüsselung. Bitte Passwort und Datei prüfen."
-        )
+    except (InvalidKey, InvalidToken) as err:
+        raise ValueError("Falsches Passwort oder beschädigte Datei.") from err
+    except (json.JSONDecodeError, UnicodeDecodeError) as err:
+        raise ValueError("Entschlüsselte Daten sind kein gültiges JSON-Format.") from err
+    except Exception as err:
+        raise ValueError("Fehler bei der Entschlüsselung. Bitte Passwort und Datei prüfen.") from err

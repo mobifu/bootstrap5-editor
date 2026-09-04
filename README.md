@@ -75,7 +75,7 @@ python app.py
 - **AES-256-GCM Verschlüsselung**: Projektdateien (`.enc`) werden nach OWASP-Empfehlung mit PBKDF2HMAC (SHA-256, 600.000 Iterationen) und kryptografisch sicheren Salts & Nonces (`secrets`-Modul) verschlüsselt.
 - **XSS- & Injection-Filter**: Striktes URL-Sanitizing neutralisiert schadhafte URI-Schemata (`javascript:`, `vbscript:`, `data:text/html`).
 - **Path-Traversal-Schutz**: Alle internen Dateizugriffe und Vorschau-Generierungen nutzen deterministische `pathlib.Path`-Auflösungen.
-- **Supply-Chain-Sicherheit**: Strikte Trennung von Produktions- (`requirements.txt`) und Entwickler-Abhängigkeiten (`requirements-dev.txt`).
+- **Supply-Chain-Sicherheit**: Strikte Trennung von Produktions- (`requirements.txt`) und Entwickler-Abhängigkeiten (`requirements-dev.txt`) sowie automatisierte CVE-Prüfung via `pip-audit`.
 - **Open Source Provenance**: Automatisierte CI/CD-Releases sind via **Sigstore / GitHub Artifact Attestations** kryptografisch verifiziert.
 
 ---
@@ -84,13 +84,22 @@ python app.py
 
 ### Lokale Tests & Code-Audits
 ```powershell
-# Unit-Tests ausführen
+# 1. Automatisierte Tests (46 Unit- & Controller-Tests inkl. Coverage)
 python -m pytest
 
-# Linter & Security-Audits
+# 2. Codebase Audit (Ruff Linter & Formatter)
 python -m ruff check .
-python -m bandit -r . -x ./.venv -ll
+
+# 3. Security Audit (Bandit Static Analysis)
+python -m bandit -r . -x ./.venv,./build,./dist,./build_staging,./test_*.py -ll
+
+# 4. Dependency Vulnerability Audit (pip-audit)
+python -m pip_audit -r requirements.txt
 ```
+
+### CI/CD Pipeline
+- **Continuous Integration (`.github/workflows/ci.yml`)**: Jeder Push und Pull-Request auf `main`/`master` durchläuft automatisch Ruff-Linting, Bandit-Sicherheitsscan, Dependency-Audit (`pip-audit`) und die Pytest-Suite.
+- **Release Automation (`.github/workflows/release.yml`)**: Bei getaggten Versionen (`v*`) wird der Windows-Build erstellt, optional code-signiert, mit Sigstore Provenance versehen und auf GitHub Releases veröffentlicht.
 
 ### Windows Executable bauen
 ```powershell

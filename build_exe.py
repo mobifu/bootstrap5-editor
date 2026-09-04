@@ -25,7 +25,7 @@ def run_cmd(cmd_args: list[str], check: bool = True):
 def get_current_version() -> str:
     version_file = os.path.abspath("version.py")
     if os.path.exists(version_file):
-        with open(version_file, "r", encoding="utf-8") as f:
+        with open(version_file, encoding="utf-8") as f:
             content = f.read()
             match = re.search(r'__version__\s*=\s*["\']([^"\']+)["\']', content)
             if match:
@@ -45,9 +45,7 @@ def bump_version_prompt() -> str:
 
     # In nicht-interaktiven Umgebungen oder Standard-Build
     if not sys.stdin.isatty():
-        print(
-            "> Automatische Ausführung im non-interactive Modus. Behalte Version bei."
-        )
+        print("> Automatische Ausführung im non-interactive Modus. Behalte Version bei.")
         return current_ver
 
     choice = input("Auswahl [1-5] (Standard 1): ").strip() or "1"
@@ -84,7 +82,7 @@ def bump_version_prompt() -> str:
 def create_zip_archive(source_dir: str, output_zip_path: str):
     print(f"> Erstelle ZIP-Archiv: {output_zip_path} ...")
     with zipfile.ZipFile(output_zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
-        for root, dirs, files in os.walk(source_dir):
+        for root, _dirs, files in os.walk(source_dir):
             for file in files:
                 file_path = os.path.join(root, file)
                 arcname = os.path.relpath(file_path, os.path.dirname(source_dir))
@@ -112,9 +110,7 @@ def main():
         shell=False,
     )
     if ruff_res.returncode != 0:
-        print(
-            "[FEHLER] Ruff hat Syntax- oder schwere Code-Fehler festgestellt! Build wird abgebrochen."
-        )
+        print("[FEHLER] Ruff hat Syntax- oder schwere Code-Fehler festgestellt! Build wird abgebrochen.")
         sys.exit(1)
 
     # 2. Pytest Unit-Tests
@@ -127,12 +123,11 @@ def main():
     # 3. Bandit Security Audit
     print("> Starte Bandit Sicherheitsanalyse...")
     audit_res = subprocess.run(
-        [sys.executable, "-m", "bandit", "-r", ".", "-x", "./.venv", "-ll"], shell=False
+        [sys.executable, "-m", "bandit", "-r", ".", "-x", "./.venv,./build,./dist,./build_staging,./test_*.py", "-ll"],
+        shell=False,
     )
     if audit_res.returncode != 0:
-        print(
-            "[FEHLER] Bandit hat kritische Sicherheitslücken gemeldet! Build wird abgebrochen."
-        )
+        print("[FEHLER] Bandit hat kritische Sicherheitslücken gemeldet! Build wird abgebrochen.")
         sys.exit(1)
 
     log_step("2. Code-Verschleierung & Vorbereitung")
@@ -221,9 +216,7 @@ def main():
             os.rename(target_dist_folder, final_dist_folder)
         target_dist_folder = final_dist_folder
     else:
-        print(
-            "> Verwende PyInstaller für den Build (schneller Start & aufgeräumte Ordnerstruktur)..."
-        )
+        print("> Verwende PyInstaller für den Build (schneller Start & aufgeräumte Ordnerstruktur)...")
         pyinstaller_cmd = [
             sys.executable,
             "-m",
@@ -259,13 +252,9 @@ def main():
     log_step("5. Fertigstellung & Überprüfung")
     exe_path = os.path.join(target_dist_folder, "BootstrapEditor.exe")
     if os.path.exists(exe_path):
-        print(
-            f"\n[ERFOLG] Die Executable wurde erfolgreich erstellt unter:\n{exe_path}"
-        )
+        print(f"\n[ERFOLG] Die Executable wurde erfolgreich erstellt unter:\n{exe_path}")
         if os.path.exists(zip_filename):
-            print(
-                f"[ERFOLG] Die ZIP-Variante wurde erfolgreich erstellt unter:\n{zip_filename}\n"
-            )
+            print(f"[ERFOLG] Die ZIP-Variante wurde erfolgreich erstellt unter:\n{zip_filename}\n")
     else:
         print("\n[FEHLER] Die .exe Datei konnte nicht gefunden werden!")
         sys.exit(1)

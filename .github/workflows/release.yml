@@ -33,9 +33,9 @@ jobs:
 
       - name: Run Tests & Security Checks
         run: |
-          python -m ruff check --select=E,F,W --ignore=E501,W293 .
+          python -m ruff check .
+          python -m bandit -r . -x ./.venv,./build,./dist,./build_staging,./test_*.py -ll
           python -m pytest
-          python -m bandit -r . -x ./.venv -ll
 
       - name: Build Executable
         run: |

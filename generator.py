@@ -70,15 +70,9 @@ class HTMLGenerator:
 class HTMLConverter:
     """Konvertiert bestehenden Bootstrap 3 HTML Code in Bootstrap 5 Code."""
 
-    _RE_BS3_CSS = re.compile(
-        r'<link[^>]*href="[^"]*bootstrap[^"]*3\.[^"]*"[^>]*>', re.IGNORECASE
-    )
-    _RE_BS3_JS = re.compile(
-        r'<script[^>]*src="[^"]*bootstrap[^"]*3\.[^"]*"[^>]*></script>', re.IGNORECASE
-    )
-    _RE_JQUERY = re.compile(
-        r'<script[^>]*src="[^"]*jquery[^"]*"[^>]*></script>\s*', re.IGNORECASE
-    )
+    _RE_BS3_CSS = re.compile(r'<link[^>]*href="[^"]*bootstrap[^"]*3\.[^"]*"[^>]*>', re.IGNORECASE)
+    _RE_BS3_JS = re.compile(r'<script[^>]*src="[^"]*bootstrap[^"]*3\.[^"]*"[^>]*></script>', re.IGNORECASE)
+    _RE_JQUERY = re.compile(r'<script[^>]*src="[^"]*jquery[^"]*"[^>]*></script>\s*', re.IGNORECASE)
 
     _RE_REPLACEMENTS = [
         (re.compile(r"\bimg-responsive\b"), "img-fluid"),
@@ -104,8 +98,7 @@ class HTMLConverter:
     ]
 
     _TAG_PATTERNS = {
-        tag: re.compile(rf"<({tag}\b[^>/]*)(?<!/)>", re.IGNORECASE)
-        for tag in ["img", "input", "br", "hr"]
+        tag: re.compile(rf"<({tag}\b[^>/]*)(?<!/)>", re.IGNORECASE) for tag in ["img", "input", "br", "hr"]
     }
 
     @staticmethod
@@ -122,7 +115,7 @@ class HTMLConverter:
             code = pattern.sub(replacement, code)
 
         # 3. Automatische Syntax-Reparatur
-        code, repairs = HTMLConverter.fix_html_syntax(code)
+        code, _repairs = HTMLConverter.fix_html_syntax(code)
 
         return code
 
@@ -146,9 +139,7 @@ class HTMLConverter:
         fixed_code = re.sub(r"<[^>]+>", fix_unclosed_quotes, code)
         if fixed_code != code:
             code = fixed_code
-            repairs.append(
-                'Fehlendes schließendes Anführungszeichen `"` in Attribut ergänzt.'
-            )
+            repairs.append('Fehlendes schließendes Anführungszeichen `"` in Attribut ergänzt.')
 
         # Ungeschlossene selbstschließende Tags reparieren (z. B. <img ...> -> <img ... />)
         for tag, pattern in HTMLConverter._TAG_PATTERNS.items():
@@ -192,21 +183,15 @@ class HTMLConverter:
         rows = []
 
         # 1. <th> Extraktion
-        th_matches = re.findall(
-            r"<th[^>]*>(.*?)</th>", html_code, re.DOTALL | re.IGNORECASE
-        )
+        th_matches = re.findall(r"<th[^>]*>(.*?)</th>", html_code, re.DOTALL | re.IGNORECASE)
         for th in th_matches:
             clean_text = re.sub(r"<[^>]+>", "", th).strip()
             headers.append(clean_text)
 
         # 2. <tr> Extraktion für <td> Zellen
-        tr_matches = re.findall(
-            r"<tr[^>]*>(.*?)</tr>", html_code, re.DOTALL | re.IGNORECASE
-        )
+        tr_matches = re.findall(r"<tr[^>]*>(.*?)</tr>", html_code, re.DOTALL | re.IGNORECASE)
         for tr in tr_matches:
-            td_matches = re.findall(
-                r"<td[^>]*>(.*?)</td>", tr, re.DOTALL | re.IGNORECASE
-            )
+            td_matches = re.findall(r"<td[^>]*>(.*?)</td>", tr, re.DOTALL | re.IGNORECASE)
             if td_matches:
                 row_cells = [re.sub(r"<[^>]+>", "", td).strip() for td in td_matches]
                 rows.append(row_cells)

@@ -3,6 +3,7 @@ import os
 import sys
 import tkinter as tk
 import webbrowser
+from pathlib import Path
 from tkinter import filedialog, messagebox
 
 import customtkinter as ctk
@@ -28,9 +29,6 @@ from models import (
     TableBlock,
     TextBlock,
 )
-
-
-from pathlib import Path
 
 BASE_APP_DIR = Path(__file__).resolve().parent
 
@@ -114,17 +112,13 @@ class ButtonSelectionDialog(ctk.CTkToplevel):
             "light",
             "dark",
         ]
-        self.style_optionmenu = ctk.CTkOptionMenu(
-            self, values=styles, variable=self.style_var, width=150
-        )
+        self.style_optionmenu = ctk.CTkOptionMenu(self, values=styles, variable=self.style_var, width=150)
         self.style_optionmenu.pack(pady=5)
 
         btn_frame = ctk.CTkFrame(self, fg_color="transparent")
         btn_frame.pack(pady=15)
 
-        ctk.CTkButton(btn_frame, text="Speichern", command=self.save).pack(
-            side="left", padx=10
-        )
+        ctk.CTkButton(btn_frame, text="Speichern", command=self.save).pack(side="left", padx=10)
         ctk.CTkButton(
             btn_frame,
             text="Abbrechen",
@@ -179,17 +173,13 @@ class AlertSelectionDialog(ctk.CTkToplevel):
             "light",
             "dark",
         ]
-        self.style_optionmenu = ctk.CTkOptionMenu(
-            self, values=styles, variable=self.style_var, width=150
-        )
+        self.style_optionmenu = ctk.CTkOptionMenu(self, values=styles, variable=self.style_var, width=150)
         self.style_optionmenu.pack(pady=5)
 
         btn_frame = ctk.CTkFrame(self, fg_color="transparent")
         btn_frame.pack(pady=15)
 
-        ctk.CTkButton(btn_frame, text="Speichern", command=self.save).pack(
-            side="left", padx=10
-        )
+        ctk.CTkButton(btn_frame, text="Speichern", command=self.save).pack(side="left", padx=10)
         ctk.CTkButton(
             btn_frame,
             text="Abbrechen",
@@ -219,13 +209,9 @@ class HtmlInputDialog(ctk.CTkToplevel):
         self.geometry("600x450")
         self.result_code = None
 
-        ctk.CTkLabel(
-            self, text="Eigener HTML-Code:", font=ctk.CTkFont(weight="bold")
-        ).pack(pady=(15, 5))
+        ctk.CTkLabel(self, text="Eigener HTML-Code:", font=ctk.CTkFont(weight="bold")).pack(pady=(15, 5))
 
-        self.textbox = ctk.CTkTextbox(
-            self, width=560, height=300, font=("Consolas", 11)
-        )
+        self.textbox = ctk.CTkTextbox(self, width=560, height=300, font=("Consolas", 11))
         self.textbox.pack(padx=10, pady=5)
         if default_code:
             self.textbox.insert("1.0", default_code)
@@ -233,9 +219,7 @@ class HtmlInputDialog(ctk.CTkToplevel):
         btn_frame = ctk.CTkFrame(self, fg_color="transparent")
         btn_frame.pack(pady=15)
 
-        ctk.CTkButton(btn_frame, text="Speichern", command=self.save).pack(
-            side="left", padx=10
-        )
+        ctk.CTkButton(btn_frame, text="Speichern", command=self.save).pack(side="left", padx=10)
         ctk.CTkButton(
             btn_frame,
             text="Abbrechen",
@@ -272,21 +256,15 @@ class TableDialog(ctk.CTkToplevel):
         self.result_rows = None
 
         headers_str = (
-            HTMLConverter.format_table_line(default_headers)
-            if default_headers
-            else "Spalte 1 | Spalte 2 | Spalte 3"
+            HTMLConverter.format_table_line(default_headers) if default_headers else "Spalte 1 | Spalte 2 | Spalte 3"
         )
         if not default_rows_text:
-            default_rows_text = (
-                "Zeile 1 A | Zeile 1 B | Zeile 1 C\nZeile 2 A | Zeile 2 B | Zeile 2 C"
-            )
+            default_rows_text = "Zeile 1 A | Zeile 1 B | Zeile 1 C\nZeile 2 A | Zeile 2 B | Zeile 2 C"
 
         top_frame = ctk.CTkFrame(self, fg_color="transparent")
         top_frame.pack(fill="x", padx=20, pady=(10, 0))
 
-        ctk.CTkLabel(top_frame, text="Spaltenköpfe (Getrennt mit '|'):").pack(
-            side="left"
-        )
+        ctk.CTkLabel(top_frame, text="Spaltenköpfe (Getrennt mit '|'):").pack(side="left")
         ctk.CTkButton(
             top_frame,
             text="📋 HTML-Tabelle importieren",
@@ -301,20 +279,14 @@ class TableDialog(ctk.CTkToplevel):
         self.headers_entry.insert(0, headers_str)
         self.headers_entry.pack(pady=5)
 
-        ctk.CTkLabel(
-            self, text="Zeilen-Daten (Pro Zeile 1 Datenzeile, Getrennt mit '|'):"
-        ).pack(pady=(10, 2))
-        self.rows_textbox = ctk.CTkTextbox(
-            self, width=500, height=220, font=("Consolas", 11)
-        )
+        ctk.CTkLabel(self, text="Zeilen-Daten (Pro Zeile 1 Datenzeile, Getrennt mit '|'):").pack(pady=(10, 2))
+        self.rows_textbox = ctk.CTkTextbox(self, width=500, height=220, font=("Consolas", 11))
         self.rows_textbox.insert("1.0", default_rows_text)
         self.rows_textbox.pack(pady=5)
 
         btn_frame = ctk.CTkFrame(self, fg_color="transparent")
         btn_frame.pack(pady=15)
-        ctk.CTkButton(btn_frame, text="Speichern", command=self.save).pack(
-            side="left", padx=10
-        )
+        ctk.CTkButton(btn_frame, text="Speichern", command=self.save).pack(side="left", padx=10)
         ctk.CTkButton(
             btn_frame,
             text="Abbrechen",
@@ -338,9 +310,7 @@ class TableDialog(ctk.CTkToplevel):
             font=ctk.CTkFont(weight="bold"),
         ).pack(pady=(15, 5))
 
-        html_textbox = ctk.CTkTextbox(
-            import_win, width=500, height=220, font=("Consolas", 11)
-        )
+        html_textbox = ctk.CTkTextbox(import_win, width=500, height=220, font=("Consolas", 11))
         html_textbox.pack(pady=5)
 
         def parse_and_apply():
@@ -362,9 +332,7 @@ class TableDialog(ctk.CTkToplevel):
 
             if rows:
                 self.rows_textbox.delete("1.0", "end")
-                formatted_rows = "\n".join(
-                    [HTMLConverter.format_table_line(r) for r in rows]
-                )
+                formatted_rows = "\n".join([HTMLConverter.format_table_line(r) for r in rows])
                 self.rows_textbox.insert("1.0", formatted_rows)
 
             messagebox.showinfo(
@@ -450,16 +418,12 @@ class CardDialog(ctk.CTkToplevel):
             "info",
             "dark",
         ]
-        self.style_optionmenu = ctk.CTkOptionMenu(
-            self, values=styles, variable=self.style_var, width=150
-        )
+        self.style_optionmenu = ctk.CTkOptionMenu(self, values=styles, variable=self.style_var, width=150)
         self.style_optionmenu.pack(pady=5)
 
         btn_frame = ctk.CTkFrame(self, fg_color="transparent")
         btn_frame.pack(pady=15)
-        ctk.CTkButton(btn_frame, text="Speichern", command=self.save).pack(
-            side="left", padx=10
-        )
+        ctk.CTkButton(btn_frame, text="Speichern", command=self.save).pack(side="left", padx=10)
         ctk.CTkButton(
             btn_frame,
             text="Abbrechen",
@@ -514,16 +478,12 @@ class BadgeDialog(ctk.CTkToplevel):
             "dark",
             "light",
         ]
-        self.style_optionmenu = ctk.CTkOptionMenu(
-            self, values=styles, variable=self.style_var, width=150
-        )
+        self.style_optionmenu = ctk.CTkOptionMenu(self, values=styles, variable=self.style_var, width=150)
         self.style_optionmenu.pack(pady=5)
 
         btn_frame = ctk.CTkFrame(self, fg_color="transparent")
         btn_frame.pack(pady=15)
-        ctk.CTkButton(btn_frame, text="Speichern", command=self.save).pack(
-            side="left", padx=10
-        )
+        ctk.CTkButton(btn_frame, text="Speichern", command=self.save).pack(side="left", padx=10)
         ctk.CTkButton(
             btn_frame,
             text="Abbrechen",
@@ -565,9 +525,7 @@ class ListGroupDialog(ctk.CTkToplevel):
 
         btn_frame = ctk.CTkFrame(self, fg_color="transparent")
         btn_frame.pack(pady=15)
-        ctk.CTkButton(btn_frame, text="Speichern", command=self.save).pack(
-            side="left", padx=10
-        )
+        ctk.CTkButton(btn_frame, text="Speichern", command=self.save).pack(side="left", padx=10)
         ctk.CTkButton(
             btn_frame,
             text="Abbrechen",
@@ -598,10 +556,7 @@ class AccordionDialog(ctk.CTkToplevel):
         self.result_items = None
 
         if default_items:
-            lines = [
-                f"{item.get('title', '')} | {item.get('content', '')}"
-                for item in default_items
-            ]
+            lines = [f"{item.get('title', '')} | {item.get('content', '')}" for item in default_items]
             default_text = "\n".join(lines)
         else:
             default_text = "Abschnitt 1 | Inhalt von Abschnitt 1...\nAbschnitt 2 | Inhalt von Abschnitt 2..."
@@ -618,9 +573,7 @@ class AccordionDialog(ctk.CTkToplevel):
 
         btn_frame = ctk.CTkFrame(self, fg_color="transparent")
         btn_frame.pack(pady=15)
-        ctk.CTkButton(btn_frame, text="Speichern", command=self.save).pack(
-            side="left", padx=10
-        )
+        ctk.CTkButton(btn_frame, text="Speichern", command=self.save).pack(side="left", padx=10)
         ctk.CTkButton(
             btn_frame,
             text="Abbrechen",
@@ -676,9 +629,7 @@ class FormInputDialog(ctk.CTkToplevel):
         ctk.CTkLabel(self, text="Feld-Typ:").pack(pady=(5, 2))
         self.type_var = ctk.StringVar(value=default_type)
         types = ["text", "email", "password", "number", "textarea"]
-        self.type_menu = ctk.CTkOptionMenu(
-            self, values=types, variable=self.type_var, width=200
-        )
+        self.type_menu = ctk.CTkOptionMenu(self, values=types, variable=self.type_var, width=200)
         self.type_menu.pack(pady=3)
 
         ctk.CTkLabel(self, text="Platzhalter (Placeholder):").pack(pady=(5, 2))
@@ -693,9 +644,7 @@ class FormInputDialog(ctk.CTkToplevel):
 
         btn_frame = ctk.CTkFrame(self, fg_color="transparent")
         btn_frame.pack(pady=15)
-        ctk.CTkButton(btn_frame, text="Speichern", command=self.save).pack(
-            side="left", padx=10
-        )
+        ctk.CTkButton(btn_frame, text="Speichern", command=self.save).pack(side="left", padx=10)
         ctk.CTkButton(
             btn_frame,
             text="Abbrechen",
@@ -743,9 +692,7 @@ class NavbarDialog(ctk.CTkToplevel):
         ctk.CTkLabel(self, text="Hintergrundfarbe:").pack(pady=(5, 2))
         self.bg_var = ctk.StringVar(value=default_bg)
         bgs = ["dark", "primary", "light"]
-        self.bg_menu = ctk.CTkOptionMenu(
-            self, values=bgs, variable=self.bg_var, width=180
-        )
+        self.bg_menu = ctk.CTkOptionMenu(self, values=bgs, variable=self.bg_var, width=180)
         self.bg_menu.pack(pady=3)
 
         ctk.CTkLabel(
@@ -760,9 +707,7 @@ class NavbarDialog(ctk.CTkToplevel):
 
         btn_frame = ctk.CTkFrame(self, fg_color="transparent")
         btn_frame.pack(pady=15)
-        ctk.CTkButton(btn_frame, text="Speichern", command=self.save).pack(
-            side="left", padx=10
-        )
+        ctk.CTkButton(btn_frame, text="Speichern", command=self.save).pack(side="left", padx=10)
         ctk.CTkButton(
             btn_frame,
             text="Abbrechen",
@@ -803,53 +748,43 @@ class ElementSpacingDialog(ctk.CTkToplevel):
         self.element = element
         spacing_options = ["none", "0", "1", "2", "3", "4", "5"]
 
-        ctk.CTkLabel(
-            self, text="Aussenabstände (Margin)", font=ctk.CTkFont(weight="bold")
-        ).pack(pady=(15, 5))
+        ctk.CTkLabel(self, text="Aussenabstände (Margin)", font=ctk.CTkFont(weight="bold")).pack(pady=(15, 5))
 
         m_frame = ctk.CTkFrame(self, fg_color="transparent")
         m_frame.pack(pady=5)
 
         ctk.CTkLabel(m_frame, text="Oben (mt-):").grid(row=0, column=0, padx=10, pady=5)
         self.mt_var = ctk.StringVar(value=element.margin_top)
-        ctk.CTkOptionMenu(
-            m_frame, values=spacing_options, variable=self.mt_var, width=100
-        ).grid(row=0, column=1, padx=10, pady=5)
-
-        ctk.CTkLabel(m_frame, text="Unten (mb-):").grid(
-            row=1, column=0, padx=10, pady=5
+        ctk.CTkOptionMenu(m_frame, values=spacing_options, variable=self.mt_var, width=100).grid(
+            row=0, column=1, padx=10, pady=5
         )
-        self.mb_var = ctk.StringVar(value=element.margin_bottom)
-        ctk.CTkOptionMenu(
-            m_frame, values=spacing_options, variable=self.mb_var, width=100
-        ).grid(row=1, column=1, padx=10, pady=5)
 
-        ctk.CTkLabel(
-            self, text="Innenabstände (Padding)", font=ctk.CTkFont(weight="bold")
-        ).pack(pady=(15, 5))
+        ctk.CTkLabel(m_frame, text="Unten (mb-):").grid(row=1, column=0, padx=10, pady=5)
+        self.mb_var = ctk.StringVar(value=element.margin_bottom)
+        ctk.CTkOptionMenu(m_frame, values=spacing_options, variable=self.mb_var, width=100).grid(
+            row=1, column=1, padx=10, pady=5
+        )
+
+        ctk.CTkLabel(self, text="Innenabstände (Padding)", font=ctk.CTkFont(weight="bold")).pack(pady=(15, 5))
 
         p_frame = ctk.CTkFrame(self, fg_color="transparent")
         p_frame.pack(pady=5)
 
         ctk.CTkLabel(p_frame, text="Oben (pt-):").grid(row=0, column=0, padx=10, pady=5)
         self.pt_var = ctk.StringVar(value=element.padding_top)
-        ctk.CTkOptionMenu(
-            p_frame, values=spacing_options, variable=self.pt_var, width=100
-        ).grid(row=0, column=1, padx=10, pady=5)
-
-        ctk.CTkLabel(p_frame, text="Unten (pb-):").grid(
-            row=1, column=0, padx=10, pady=5
+        ctk.CTkOptionMenu(p_frame, values=spacing_options, variable=self.pt_var, width=100).grid(
+            row=0, column=1, padx=10, pady=5
         )
+
+        ctk.CTkLabel(p_frame, text="Unten (pb-):").grid(row=1, column=0, padx=10, pady=5)
         self.pb_var = ctk.StringVar(value=element.padding_bottom)
-        ctk.CTkOptionMenu(
-            p_frame, values=spacing_options, variable=self.pb_var, width=100
-        ).grid(row=1, column=1, padx=10, pady=5)
+        ctk.CTkOptionMenu(p_frame, values=spacing_options, variable=self.pb_var, width=100).grid(
+            row=1, column=1, padx=10, pady=5
+        )
 
         btn_frame = ctk.CTkFrame(self, fg_color="transparent")
         btn_frame.pack(pady=20)
-        ctk.CTkButton(btn_frame, text="Speichern", command=self.save).pack(
-            side="left", padx=10
-        )
+        ctk.CTkButton(btn_frame, text="Speichern", command=self.save).pack(side="left", padx=10)
         ctk.CTkButton(
             btn_frame,
             text="Abbrechen",
@@ -887,9 +822,7 @@ class ConverterDialog(ctk.CTkToplevel):
             font=ctk.CTkFont(weight="bold"),
         ).pack(pady=(10, 5))
 
-        self.input_textbox = ctk.CTkTextbox(
-            self, width=760, height=200, font=("Consolas", 11)
-        )
+        self.input_textbox = ctk.CTkTextbox(self, width=760, height=200, font=("Consolas", 11))
         self.input_textbox.pack(padx=10, pady=5)
 
         btn_convert = ctk.CTkButton(
@@ -907,9 +840,7 @@ class ConverterDialog(ctk.CTkToplevel):
             font=ctk.CTkFont(weight="bold"),
         ).pack(pady=(5, 5))
 
-        self.output_textbox = ctk.CTkTextbox(
-            self, width=760, height=200, font=("Consolas", 11)
-        )
+        self.output_textbox = ctk.CTkTextbox(self, width=760, height=200, font=("Consolas", 11))
         self.output_textbox.pack(padx=10, pady=5)
 
         btn_frame = ctk.CTkFrame(self, fg_color="transparent")
@@ -922,9 +853,7 @@ class ConverterDialog(ctk.CTkToplevel):
             fg_color="green",
             hover_color="darkgreen",
         ).pack(side="left", padx=10)
-        ctk.CTkButton(btn_frame, text="Schließen", command=self.destroy).pack(
-            side="left", padx=10
-        )
+        ctk.CTkButton(btn_frame, text="Schließen", command=self.destroy).pack(side="left", padx=10)
 
         self.transient(master)
         self.grab_set()
@@ -951,9 +880,7 @@ class ConverterDialog(ctk.CTkToplevel):
                 f"HTML-Code erfolgreich konvertiert und repariert:{repair_info}",
             )
         else:
-            messagebox.showinfo(
-                "Erfolg", "HTML-Code erfolgreich nach Bootstrap 5 konvertiert!"
-            )
+            messagebox.showinfo("Erfolg", "HTML-Code erfolgreich nach Bootstrap 5 konvertiert!")
 
     def copy_output(self):
         code = self.output_textbox.get("1.0", "end-1c")
@@ -991,9 +918,7 @@ class MultilineTextInputDialog(ctk.CTkToplevel):
         btn_frame = ctk.CTkFrame(self, fg_color="transparent")
         btn_frame.pack(pady=10)
 
-        ctk.CTkButton(btn_frame, text="Speichern", command=self.save).pack(
-            side="left", padx=10
-        )
+        ctk.CTkButton(btn_frame, text="Speichern", command=self.save).pack(side="left", padx=10)
         ctk.CTkButton(
             btn_frame,
             text="Abbrechen",
@@ -1044,17 +969,13 @@ class ImageSelectionDialog(ctk.CTkToplevel):
         self.url_entry = ctk.CTkEntry(self, width=380, placeholder_text="https://...")
         self.url_entry.pack(pady=10)
 
-        self.file_btn = ctk.CTkButton(
-            self, text="Datei durchsuchen...", command=self.browse_file
-        )
+        self.file_btn = ctk.CTkButton(self, text="Datei durchsuchen...", command=self.browse_file)
         self.file_path_label = ctk.CTkLabel(self, text="")
 
         btn_frame = ctk.CTkFrame(self, fg_color="transparent")
         btn_frame.pack(pady=20)
 
-        ctk.CTkButton(btn_frame, text="Hinzufügen", command=self.save).pack(
-            side="left", padx=10
-        )
+        ctk.CTkButton(btn_frame, text="Hinzufügen", command=self.save).pack(side="left", padx=10)
         ctk.CTkButton(
             btn_frame,
             text="Abbrechen",
@@ -1079,9 +1000,7 @@ class ImageSelectionDialog(ctk.CTkToplevel):
             self.file_path_label.pack(pady=5)
 
     def browse_file(self):
-        filepath = filedialog.askopenfilename(
-            filetypes=[("Bilder", "*.png;*.jpg;*.jpeg;*.gif;*.webp;*.svg;*.bmp")]
-        )
+        filepath = filedialog.askopenfilename(filetypes=[("Bilder", "*.png;*.jpg;*.jpeg;*.gif;*.webp;*.svg;*.bmp")])
         if filepath:
             self.local_filepath = filepath
             display_path = filepath if len(filepath) < 40 else "..." + filepath[-37:]
@@ -1133,17 +1052,13 @@ class ColumnLayoutDialog(ctk.CTkToplevel):
             "4 Spalten (3 / 3 / 3 / 3)",
         ]
 
-        self.optionmenu = ctk.CTkOptionMenu(
-            self, values=layouts, variable=self.layout_var, width=260
-        )
+        self.optionmenu = ctk.CTkOptionMenu(self, values=layouts, variable=self.layout_var, width=260)
         self.optionmenu.pack(pady=10)
 
         btn_frame = ctk.CTkFrame(self, fg_color="transparent")
         btn_frame.pack(pady=15)
 
-        ctk.CTkButton(btn_frame, text="OK", command=self.save, width=80).pack(
-            side="left", padx=10
-        )
+        ctk.CTkButton(btn_frame, text="OK", command=self.save, width=80).pack(side="left", padx=10)
         ctk.CTkButton(
             btn_frame,
             text="Abbrechen",
@@ -1541,9 +1456,7 @@ class HelpDialog(ctk.CTkToplevel):
         search_frame = ctk.CTkFrame(header_frame, fg_color="transparent")
         search_frame.pack(fill="x", pady=5)
 
-        ctk.CTkLabel(
-            search_frame, text="🔍 Suche:", font=ctk.CTkFont(weight="bold")
-        ).pack(side="left", padx=(0, 10))
+        ctk.CTkLabel(search_frame, text="🔍 Suche:", font=ctk.CTkFont(weight="bold")).pack(side="left", padx=(0, 10))
 
         self.search_entry = ctk.CTkEntry(
             search_frame,
@@ -1553,9 +1466,7 @@ class HelpDialog(ctk.CTkToplevel):
         self.search_entry.pack(side="left", fill="x", expand=True, padx=(0, 10))
         self.search_entry.bind("<KeyRelease>", self.on_search)
 
-        self.reset_search_btn = ctk.CTkButton(
-            search_frame, text="Zurücksetzen", width=100, command=self.reset_search
-        )
+        self.reset_search_btn = ctk.CTkButton(search_frame, text="Zurücksetzen", width=100, command=self.reset_search)
         self.reset_search_btn.pack(side="left", padx=(0, 10))
 
         pdf_btn = ctk.CTkButton(
@@ -1610,9 +1521,7 @@ class HelpDialog(ctk.CTkToplevel):
             card = ctk.CTkFrame(self.scroll_frame, corner_radius=8)
             card.pack(fill="x", pady=6, padx=5)
 
-            t_lbl = ctk.CTkLabel(
-                card, text=sec["title"], font=ctk.CTkFont(size=15, weight="bold")
-            )
+            t_lbl = ctk.CTkLabel(card, text=sec["title"], font=ctk.CTkFont(size=15, weight="bold"))
             t_lbl.pack(anchor="w", padx=15, pady=(10, 5))
 
             c_lbl = ctk.CTkLabel(
@@ -1752,11 +1661,7 @@ class HelpDialog(ctk.CTkToplevel):
                 lines = sec["content"].split("\n")
                 formatted_lines = []
                 for line in lines:
-                    safe_line = (
-                        line.replace("&", "&amp;")
-                        .replace("<", "&lt;")
-                        .replace(">", "&gt;")
-                    )
+                    safe_line = line.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
                     formatted_lines.append(safe_line)
 
                 content_p = "<br/>".join(formatted_lines)
@@ -1771,11 +1676,7 @@ class HelpDialog(ctk.CTkToplevel):
 
         except ImportError:
             # Fallback falls reportlab nicht vorhanden ist
-            html_filepath = (
-                filepath.replace(".pdf", ".html")
-                if filepath.endswith(".pdf")
-                else filepath + ".html"
-            )
+            html_filepath = filepath.replace(".pdf", ".html") if filepath.endswith(".pdf") else filepath + ".html"
             try:
                 html_content = """<!DOCTYPE html>
 <html lang="de">
@@ -1856,7 +1757,7 @@ class MainApplication(ctk.CTk):
     def load_settings(self):
         if os.path.exists(self.settings_file):
             try:
-                with open(self.settings_file, "r") as f:
+                with open(self.settings_file) as f:
                     data = json.load(f)
                     sash1 = data.get("sash1", 220)
                     sash2 = data.get("sash2", 800)
@@ -1886,33 +1787,21 @@ class MainApplication(ctk.CTk):
         self.destroy()
 
     def _build_ui(self):
-        self.main_paned = tk.PanedWindow(
-            self, orient=tk.HORIZONTAL, sashwidth=6, bg="#777777"
-        )
+        self.main_paned = tk.PanedWindow(self, orient=tk.HORIZONTAL, sashwidth=6, bg="#777777")
         self.main_paned.pack(fill="both", expand=True)
 
         # --- LINKE SIDEBAR ---
         self.sidebar = ctk.CTkFrame(self.main_paned, width=200, corner_radius=0)
         self.sidebar.pack_propagate(False)
 
-        ctk.CTkLabel(
-            self.sidebar, text="Werkzeuge", font=ctk.CTkFont(size=20, weight="bold")
-        ).pack(pady=20)
+        ctk.CTkLabel(self.sidebar, text="Werkzeuge", font=ctk.CTkFont(size=20, weight="bold")).pack(pady=20)
 
-        ctk.CTkButton(
-            self.sidebar, text="+ Neue Zeile / Spalten", command=self.add_column_row
-        ).pack(pady=10, padx=20)
-        ctk.CTkButton(
-            self.sidebar, text="+ Überschrift (H1-H6)", command=self.add_heading_row
-        ).pack(pady=10, padx=20)
-        ctk.CTkButton(
-            self.sidebar, text="+ Eigener HTML Code", command=self.add_html_row
-        ).pack(pady=10, padx=20)
+        ctk.CTkButton(self.sidebar, text="+ Neue Zeile / Spalten", command=self.add_column_row).pack(pady=10, padx=20)
+        ctk.CTkButton(self.sidebar, text="+ Überschrift (H1-H6)", command=self.add_heading_row).pack(pady=10, padx=20)
+        ctk.CTkButton(self.sidebar, text="+ Eigener HTML Code", command=self.add_html_row).pack(pady=10, padx=20)
 
         # Spacer
-        ctk.CTkFrame(self.sidebar, height=2, fg_color="gray").pack(
-            pady=15, fill="x", padx=20
-        )
+        ctk.CTkFrame(self.sidebar, height=2, fg_color="gray").pack(pady=15, fill="x", padx=20)
 
         ctk.CTkButton(
             self.sidebar,
@@ -1923,9 +1812,7 @@ class MainApplication(ctk.CTk):
         ).pack(pady=10, padx=20)
 
         # Spacer
-        ctk.CTkFrame(self.sidebar, height=2, fg_color="gray").pack(
-            pady=15, fill="x", padx=20
-        )
+        ctk.CTkFrame(self.sidebar, height=2, fg_color="gray").pack(pady=15, fill="x", padx=20)
 
         ctk.CTkButton(
             self.sidebar,
@@ -1943,9 +1830,7 @@ class MainApplication(ctk.CTk):
         ).pack(pady=10, padx=20)
 
         # Spacer
-        ctk.CTkFrame(self.sidebar, height=2, fg_color="gray").pack(
-            pady=15, fill="x", padx=20
-        )
+        ctk.CTkFrame(self.sidebar, height=2, fg_color="gray").pack(pady=15, fill="x", padx=20)
 
         ctk.CTkButton(
             self.sidebar,
@@ -1985,9 +1870,7 @@ class MainApplication(ctk.CTk):
         top_row = ctk.CTkFrame(header_frame, fg_color="transparent")
         top_row.pack(fill="x", pady=(2, 5))
 
-        ctk.CTkLabel(
-            top_row, text="Generierter HTML Code", font=ctk.CTkFont(weight="bold")
-        ).pack(side="left", padx=5)
+        ctk.CTkLabel(top_row, text="Generierter HTML Code", font=ctk.CTkFont(weight="bold")).pack(side="left", padx=5)
 
         ctk.CTkLabel(top_row, text="Version:").pack(side="left", padx=(15, 5))
         self.bs_version_var = ctk.StringVar(value="Bootstrap 5")
@@ -2022,9 +1905,7 @@ class MainApplication(ctk.CTk):
             side="left", padx=4, expand=True, fill="x"
         )
 
-        self.code_textbox = ctk.CTkTextbox(
-            self.code_frame, wrap="none", font=("Consolas", 12)
-        )
+        self.code_textbox = ctk.CTkTextbox(self.code_frame, wrap="none", font=("Consolas", 12))
         self.code_textbox.grid(row=1, column=0, sticky="nsew", padx=10, pady=(0, 10))
         self.code_textbox.configure(state="disabled")
 
@@ -2091,9 +1972,7 @@ class MainApplication(ctk.CTk):
             sash2 = self.settings.get("sash2", 800)
 
             # Korrigiere sash1 (Sidebar-Rechtsgrenze)
-            sash1 = max(
-                min_sidebar, min(sash1, total_width - (min_structure + min_code))
-            )
+            sash1 = max(min_sidebar, min(sash1, total_width - (min_structure + min_code)))
 
             # Korrigiere sash2 (Struktur-Rechtsgrenze / Code-Linksgrenze)
             min_sash2 = sash1 + min_structure
@@ -2119,9 +1998,7 @@ class MainApplication(ctk.CTk):
             self.add_row(dialog.result)
 
     def add_heading_row(self):
-        dialog = MultilineTextInputDialog(
-            self, title="Überschrift hinzufügen", default_tag="h1"
-        )
+        dialog = MultilineTextInputDialog(self, title="Überschrift hinzufügen", default_tag="h1")
         text = dialog.result_text
         tag = dialog.result_tag
         if text:
@@ -2151,9 +2028,7 @@ class MainApplication(ctk.CTk):
         self.update_ui()
 
     def add_text_to_col(self, col: Column):
-        dialog = MultilineTextInputDialog(
-            self, title="Text hinzufügen", default_tag="p"
-        )
+        dialog = MultilineTextInputDialog(self, title="Text hinzufügen", default_tag="p")
         text = dialog.result_text
         tag = dialog.result_tag
         if text:
@@ -2161,9 +2036,7 @@ class MainApplication(ctk.CTk):
             self.update_ui()
 
     def add_heading_to_col(self, col: Column):
-        dialog = MultilineTextInputDialog(
-            self, title="Überschrift hinzufügen", default_tag="h2"
-        )
+        dialog = MultilineTextInputDialog(self, title="Überschrift hinzufügen", default_tag="h2")
         text = dialog.result_text
         tag = dialog.result_tag
         if text:
@@ -2191,9 +2064,7 @@ class MainApplication(ctk.CTk):
     def add_alert_to_col(self, col: Column):
         dialog = AlertSelectionDialog(self, title="Hinweisbox (Alert) hinzufügen")
         if dialog.result_text:
-            col.add_element(
-                AlertBlock(text=dialog.result_text, style=dialog.result_style)
-            )
+            col.add_element(AlertBlock(text=dialog.result_text, style=dialog.result_style))
             self.update_ui()
 
     def add_html_to_col(self, col: Column):
@@ -2205,9 +2076,7 @@ class MainApplication(ctk.CTk):
     def add_table_to_col(self, col: Column):
         dialog = TableDialog(self, title="Tabelle hinzufügen")
         if dialog.result_headers and dialog.result_rows:
-            col.add_element(
-                TableBlock(headers=dialog.result_headers, rows=dialog.result_rows)
-            )
+            col.add_element(TableBlock(headers=dialog.result_headers, rows=dialog.result_rows))
             self.update_ui()
 
     def add_card_to_col(self, col: Column):
@@ -2225,9 +2094,7 @@ class MainApplication(ctk.CTk):
     def add_badge_to_col(self, col: Column):
         dialog = BadgeDialog(self, title="Badge / Label hinzufügen")
         if dialog.result_text:
-            col.add_element(
-                BadgeBlock(text=dialog.result_text, style=dialog.result_style)
-            )
+            col.add_element(BadgeBlock(text=dialog.result_text, style=dialog.result_style))
             self.update_ui()
 
     def add_listgroup_to_col(self, col: Column):
@@ -2270,29 +2137,19 @@ class MainApplication(ctk.CTk):
     def show_add_element_menu(self, col: Column, widget):
         menu = tk.Menu(self, tearoff=0)
         menu.add_command(label="📝 Text", command=lambda: self.add_text_to_col(col))
-        menu.add_command(
-            label="📌 Überschrift", command=lambda: self.add_heading_to_col(col)
-        )
+        menu.add_command(label="📌 Überschrift", command=lambda: self.add_heading_to_col(col))
         menu.add_command(label="🖼️ Bild", command=lambda: self.add_image_to_col(col))
         menu.add_command(label="🔘 Button", command=lambda: self.add_button_to_col(col))
-        menu.add_command(
-            label="⚠️ Hinweisbox (Alert)", command=lambda: self.add_alert_to_col(col)
-        )
+        menu.add_command(label="⚠️ Hinweisbox (Alert)", command=lambda: self.add_alert_to_col(col))
         menu.add_separator()
         menu.add_command(label="📊 Tabelle", command=lambda: self.add_table_to_col(col))
-        menu.add_command(
-            label="🎴 Card / Panel", command=lambda: self.add_card_to_col(col)
-        )
-        menu.add_command(
-            label="🏷️ Badge / Label", command=lambda: self.add_badge_to_col(col)
-        )
+        menu.add_command(label="🎴 Card / Panel", command=lambda: self.add_card_to_col(col))
+        menu.add_command(label="🏷️ Badge / Label", command=lambda: self.add_badge_to_col(col))
         menu.add_command(
             label="📋 List Group (Liste)",
             command=lambda: self.add_listgroup_to_col(col),
         )
-        menu.add_command(
-            label="🗂️ Akkordeon", command=lambda: self.add_accordion_to_col(col)
-        )
+        menu.add_command(label="🗂️ Akkordeon", command=lambda: self.add_accordion_to_col(col))
         menu.add_separator()
         menu.add_command(
             label="📝 Formularfeld (Input)",
@@ -2303,9 +2160,7 @@ class MainApplication(ctk.CTk):
             command=lambda: self.add_navbar_to_col(col),
         )
         menu.add_separator()
-        menu.add_command(
-            label="💻 Eigener HTML Code", command=lambda: self.add_html_to_col(col)
-        )
+        menu.add_command(label="💻 Eigener HTML Code", command=lambda: self.add_html_to_col(col))
 
         # Position berechnen
         x = widget.winfo_rootx()
@@ -2314,14 +2169,8 @@ class MainApplication(ctk.CTk):
 
     def edit_element(self, element: Element):
         if isinstance(element, TextBlock):
-            title = (
-                "Überschrift bearbeiten"
-                if element.tag.startswith("h")
-                else "Text bearbeiten"
-            )
-            dialog = MultilineTextInputDialog(
-                self, title=title, default_tag=element.tag
-            )
+            title = "Überschrift bearbeiten" if element.tag.startswith("h") else "Text bearbeiten"
+            dialog = MultilineTextInputDialog(self, title=title, default_tag=element.tag)
             if dialog.result_text is not None:
                 element.text = dialog.result_text
                 element.tag = dialog.result_tag
@@ -2356,16 +2205,12 @@ class MainApplication(ctk.CTk):
                 element.style = dialog.result_style
                 self.update_ui()
         elif isinstance(element, HtmlBlock):
-            dialog = HtmlInputDialog(
-                self, title="HTML-Code bearbeiten", default_code=element.code
-            )
+            dialog = HtmlInputDialog(self, title="HTML-Code bearbeiten", default_code=element.code)
             if dialog.result_code is not None:
                 element.code = dialog.result_code
                 self.update_ui()
         elif isinstance(element, TableBlock):
-            rows_str = "\n".join(
-                [HTMLConverter.format_table_line(r) for r in element.rows]
-            )
+            rows_str = "\n".join([HTMLConverter.format_table_line(r) for r in element.rows])
             dialog = TableDialog(
                 self,
                 title="Tabelle bearbeiten",
@@ -2402,16 +2247,12 @@ class MainApplication(ctk.CTk):
                 self.update_ui()
         elif isinstance(element, ListGroupBlock):
             items_str = "\n".join(element.items)
-            dialog = ListGroupDialog(
-                self, title="List Group bearbeiten", default_items_text=items_str
-            )
+            dialog = ListGroupDialog(self, title="List Group bearbeiten", default_items_text=items_str)
             if dialog.result_items is not None:
                 element.items = dialog.result_items
                 self.update_ui()
         elif isinstance(element, AccordionBlock):
-            dialog = AccordionDialog(
-                self, title="Akkordeon bearbeiten", default_items=element.items
-            )
+            dialog = AccordionDialog(self, title="Akkordeon bearbeiten", default_items=element.items)
             if dialog.result_items is not None:
                 element.items = dialog.result_items
                 self.update_ui()
@@ -2431,12 +2272,7 @@ class MainApplication(ctk.CTk):
                 element.help_text = dialog.result_help
                 self.update_ui()
         elif isinstance(element, NavbarBlock):
-            links_str = "\n".join(
-                [
-                    f"{link.get('text', '')} | {link.get('url', '#')}"
-                    for link in element.links
-                ]
-            )
+            links_str = "\n".join([f"{link.get('text', '')} | {link.get('url', '#')}" for link in element.links])
             dialog = NavbarDialog(
                 self,
                 title="Navigationsleiste bearbeiten",
@@ -2456,9 +2292,7 @@ class MainApplication(ctk.CTk):
             self.update_ui()
 
     def export_html(self):
-        filepath = filedialog.asksaveasfilename(
-            defaultextension=".html", filetypes=[("HTML-Datei", "*.html")]
-        )
+        filepath = filedialog.asksaveasfilename(defaultextension=".html", filetypes=[("HTML-Datei", "*.html")])
         if not filepath:
             return
         version = self.get_bs_version()
@@ -2471,9 +2305,7 @@ class MainApplication(ctk.CTk):
                 f"Die HTML-Datei wurde erfolgreich gespeichert unter:\n{filepath}",
             )
         except Exception as e:
-            messagebox.showerror(
-                "Fehler beim Export", f"Datei konnte nicht gespeichert werden: {e}"
-            )
+            messagebox.showerror("Fehler beim Export", f"Datei konnte nicht gespeichert werden: {e}")
 
     def remove_element(self, parent_col: Column, element_id: str):
         parent_col.remove_element(element_id)
@@ -2531,9 +2363,7 @@ class MainApplication(ctk.CTk):
             # Row Header
             row_header = ctk.CTkFrame(row_frame, fg_color="transparent")
             row_header.pack(fill="x", padx=5, pady=2)
-            ctk.CTkLabel(row_header, text=f"Zeile {r_idx+1}", text_color="black").pack(
-                side="left"
-            )
+            ctk.CTkLabel(row_header, text=f"Zeile {r_idx+1}", text_color="black").pack(side="left")
 
             btn_frame_row = ctk.CTkFrame(row_header, fg_color="transparent")
             btn_frame_row.pack(side="right")
@@ -2568,9 +2398,7 @@ class MainApplication(ctk.CTk):
             cols_container.pack(fill="x", padx=5, pady=5)
 
             for col in row.columns:
-                col_frame = ctk.CTkFrame(
-                    cols_container, fg_color="#f0f0f0", border_width=1
-                )
+                col_frame = ctk.CTkFrame(cols_container, fg_color="#f0f0f0", border_width=1)
                 col_frame.pack(side="left", fill="both", expand=True, padx=2)
 
                 ctk.CTkLabel(
@@ -2582,37 +2410,27 @@ class MainApplication(ctk.CTk):
 
                 # Render Elements in Column
                 for el in col.elements:
-                    el_frame = ctk.CTkFrame(
-                        col_frame, fg_color="white", corner_radius=5
-                    )
+                    el_frame = ctk.CTkFrame(col_frame, fg_color="white", corner_radius=5)
                     el_frame.pack(fill="x", padx=5, pady=2)
 
                     if isinstance(el, TextBlock):
-                        display_text = (
-                            el.text[:20] + "..." if len(el.text) > 20 else el.text
-                        )
+                        display_text = el.text[:20] + "..." if len(el.text) > 20 else el.text
                         ctk.CTkLabel(
                             el_frame,
                             text=f"{el.tag.upper()}: {display_text}",
                             text_color="black",
                         ).pack(side="left", padx=5)
                     elif isinstance(el, ImageBlock):
-                        ctk.CTkLabel(el_frame, text="[Bild]", text_color="blue").pack(
-                            side="left", padx=5
-                        )
+                        ctk.CTkLabel(el_frame, text="[Bild]", text_color="blue").pack(side="left", padx=5)
                     elif isinstance(el, ButtonBlock):
-                        display_text = (
-                            el.text[:15] + "..." if len(el.text) > 15 else el.text
-                        )
+                        display_text = el.text[:15] + "..." if len(el.text) > 15 else el.text
                         ctk.CTkLabel(
                             el_frame,
                             text=f"[Btn:{el.style}] {display_text}",
                             text_color="darkgreen",
                         ).pack(side="left", padx=5)
                     elif isinstance(el, AlertBlock):
-                        display_text = (
-                            el.text[:15] + "..." if len(el.text) > 15 else el.text
-                        )
+                        display_text = el.text[:15] + "..." if len(el.text) > 15 else el.text
                         ctk.CTkLabel(
                             el_frame,
                             text=f"[Alert:{el.style}] {display_text}",
@@ -2624,9 +2442,9 @@ class MainApplication(ctk.CTk):
                             if len(el.code.strip()) > 15
                             else el.code.strip()
                         )
-                        ctk.CTkLabel(
-                            el_frame, text=f"[HTML] {display_text}", text_color="purple"
-                        ).pack(side="left", padx=5)
+                        ctk.CTkLabel(el_frame, text=f"[HTML] {display_text}", text_color="purple").pack(
+                            side="left", padx=5
+                        )
                     elif isinstance(el, TableBlock):
                         ctk.CTkLabel(
                             el_frame,
@@ -2634,18 +2452,16 @@ class MainApplication(ctk.CTk):
                             text_color="#006699",
                         ).pack(side="left", padx=5)
                     elif isinstance(el, CardBlock):
-                        display_text = (
-                            el.title[:15] + "..." if len(el.title) > 15 else el.title
-                        )
+                        display_text = el.title[:15] + "..." if len(el.title) > 15 else el.title
                         ctk.CTkLabel(
                             el_frame,
                             text=f"[Card] {display_text}",
                             text_color="#880088",
                         ).pack(side="left", padx=5)
                     elif isinstance(el, BadgeBlock):
-                        ctk.CTkLabel(
-                            el_frame, text=f"[Badge] {el.text}", text_color="#008888"
-                        ).pack(side="left", padx=5)
+                        ctk.CTkLabel(el_frame, text=f"[Badge] {el.text}", text_color="#008888").pack(
+                            side="left", padx=5
+                        )
                     elif isinstance(el, AccordionBlock):
                         ctk.CTkLabel(
                             el_frame,
@@ -2694,9 +2510,7 @@ class MainApplication(ctk.CTk):
                         width=20,
                         height=20,
                         fg_color="gray",
-                        command=lambda c=col, e_id=el.id: self.move_element_down(
-                            c, e_id
-                        ),
+                        command=lambda c=col, e_id=el.id: self.move_element_down(c, e_id),
                     ).pack(side="left", padx=1)
                     ctk.CTkButton(
                         btn_actions_frame,
@@ -2718,8 +2532,7 @@ class MainApplication(ctk.CTk):
                     height=24,
                     fg_color="#1f538d",
                     hover_color="#14375e",
-                    command=lambda c=col,
-                    btn_widget=btn_frame: self.show_add_element_menu(c, btn_widget),
+                    command=lambda c=col, btn_widget=btn_frame: self.show_add_element_menu(c, btn_widget),
                 )
                 add_menu_btn.pack(side="left", padx=2)
 
@@ -2765,24 +2578,18 @@ class MainApplication(ctk.CTk):
                 webbrowser.open(preview_uri)
 
         except Exception as e:
-            messagebox.showerror(
-                "Fehler", f"Vorschau konnte nicht gestartet werden:\n{e}"
-            )
+            messagebox.showerror("Fehler", f"Vorschau konnte nicht gestartet werden:\n{e}")
 
     # --- SPEICHERN & LADEN (Security) ---
     def save_project(self):
-        filepath = filedialog.asksaveasfilename(
-            defaultextension=".enc", filetypes=[("Encrypted Project", "*.enc")]
-        )
+        filepath = filedialog.asksaveasfilename(defaultextension=".enc", filetypes=[("Encrypted Project", "*.enc")])
         if not filepath:
             return
 
         dialog = ctk.CTkInputDialog(text="Master-Passwort eingeben:", title="Passwort")
         password = dialog.get_input()
         if not password:
-            messagebox.showwarning(
-                "Abbruch", "Ohne Passwort kann nicht gespeichert werden."
-            )
+            messagebox.showwarning("Abbruch", "Ohne Passwort kann nicht gespeichert werden.")
             return
 
         try:
@@ -2790,16 +2597,12 @@ class MainApplication(ctk.CTk):
             encrypted_bytes = security.encrypt_project(data_dict, password)
             with open(filepath, "wb") as f:
                 f.write(encrypted_bytes)
-            messagebox.showinfo(
-                "Erfolg", "Projekt erfolgreich verschlüsselt gespeichert."
-            )
+            messagebox.showinfo("Erfolg", "Projekt erfolgreich verschlüsselt gespeichert.")
         except Exception as e:
             messagebox.showerror("Fehler", f"Fehler beim Speichern: {e}")
 
     def load_project(self):
-        filepath = filedialog.askopenfilename(
-            filetypes=[("Encrypted Project", "*.enc")]
-        )
+        filepath = filedialog.askopenfilename(filetypes=[("Encrypted Project", "*.enc")])
         if not filepath:
             return
 
@@ -2814,9 +2617,7 @@ class MainApplication(ctk.CTk):
             data_dict = security.decrypt_project(encrypted_bytes, password)
             self.page = Page.from_dict(data_dict)
             self.update_ui()
-            messagebox.showinfo(
-                "Erfolg", "Projekt erfolgreich geladen und entschlüsselt."
-            )
+            messagebox.showinfo("Erfolg", "Projekt erfolgreich geladen und entschlüsselt.")
         except Exception as e:
             messagebox.showerror("Fehler", f"Entschlüsselung fehlgeschlagen: {e}")
 

@@ -1,4 +1,5 @@
 import pytest
+
 from models import (
     AccordionBlock,
     AlertBlock,
@@ -24,10 +25,7 @@ from models import (
 def test_element_base_and_spacing():
     elem = Element(margin_top="3", padding_bottom="2")
     assert elem.get_spacing_classes() == "mt-3 pb-2"
-    assert (
-        elem.apply_spacing_to_html("<p>Hi</p>")
-        == '<div class="mt-3 pb-2">\n<p>Hi</p>\n</div>'
-    )
+    assert elem.apply_spacing_to_html("<p>Hi</p>") == '<div class="mt-3 pb-2">\n<p>Hi</p>\n</div>'
 
     with pytest.raises(NotImplementedError):
         elem.render()

@@ -23,7 +23,7 @@ repos:
     rev: 1.7.8
     hooks:
       - id: bandit
-        args: ["-r", ".", "-ll", "-x", "./.venv,./build,./dist,./build_staging"]
+        args: ["-r", ".", "-ll", "-x", "./.venv,./build,./dist,./build_staging,./test_*.py"]
         pass_filenames: false
 
   # Lokaler Hook für pytest (führt Unit-Tests aus)

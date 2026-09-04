@@ -1,7 +1,7 @@
 import html
-from urllib.parse import urlparse
 import uuid
 from typing import Any
+from urllib.parse import urlparse
 
 
 class Element:
@@ -9,7 +9,7 @@ class Element:
 
     def __init__(
         self,
-        element_id: str = None,
+        element_id: str | None = None,
         margin_top: str = "none",
         margin_bottom: str = "none",
         padding_top: str = "none",
@@ -165,8 +165,8 @@ def _sanitize_url(url: str, fallback: str = "#", allow_image_data: bool = False)
             return html.escape(clean, quote=True)
         if parsed.scheme.lower() in ("http", "https"):
             return html.escape(clean, quote=True)
-    except Exception:
-        pass
+    except ValueError:
+        return fallback
 
     return fallback
 
@@ -253,9 +253,7 @@ class AlertBlock(Element):
     def render(self, version: str = "5") -> str:
         escaped_text = html.escape(self.text)
         safe_style = _sanitize_css_class(self.style, "info")
-        return (
-            f'<div class="alert alert-{safe_style}" role="alert">{escaped_text}</div>'
-        )
+        return f'<div class="alert alert-{safe_style}" role="alert">{escaped_text}</div>'
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -303,17 +301,15 @@ class TableBlock(Element):
 
     def __init__(
         self,
-        headers: list[str] = None,
-        rows: list[list[str]] = None,
+        headers: list[str] | None = None,
+        rows: list[list[str]] | None = None,
         striped: bool = True,
         bordered: bool = False,
         hover: bool = True,
         **kwargs,
     ):
         super().__init__(**kwargs)
-        self.headers = (
-            headers if headers is not None else ["Spalte 1", "Spalte 2", "Spalte 3"]
-        )
+        self.headers = headers if headers is not None else ["Spalte 1", "Spalte 2", "Spalte 3"]
         self.rows = (
             rows
             if rows is not None
@@ -389,9 +385,7 @@ class CardBlock(Element):
         escaped_title = html.escape(self.title)
         escaped_content = html.escape(self.content)
         if version == "3":
-            panel_style = (
-                "default" if self.style in ["default", "light"] else self.style
-            )
+            panel_style = "default" if self.style in ["default", "light"] else self.style
             return (
                 f'<div class="panel panel-{panel_style}">\n'
                 f'  <div class="panel-heading"><h3 class="panel-title">{escaped_title}</h3></div>\n'
@@ -399,11 +393,7 @@ class CardBlock(Element):
                 f"</div>"
             )
         else:
-            bg_class = (
-                f" text-bg-{self.style}"
-                if self.style not in ["default", "light"]
-                else ""
-            )
+            bg_class = f" text-bg-{self.style}" if self.style not in ["default", "light"] else ""
             return (
                 f'<div class="card{bg_class} mb-3">\n'
                 f'  <div class="card-header">{escaped_title}</div>\n'
@@ -471,7 +461,7 @@ class BadgeBlock(Element):
 class AccordionBlock(Element):
     """Repräsentiert ein Akkordeon / Collapse Element."""
 
-    def __init__(self, items: list[dict[str, str]] = None, **kwargs):
+    def __init__(self, items: list[dict[str, str]] | None = None, **kwargs):
         super().__init__(**kwargs)
         self.items = (
             items
@@ -502,11 +492,7 @@ class AccordionBlock(Element):
                     f"  </div>\n"
                     f"</div>"
                 )
-            return (
-                f'<div class="panel-group" id="{acc_id}">\n'
-                + "\n".join(panels)
-                + "\n</div>"
-            )
+            return f'<div class="panel-group" id="{acc_id}">\n' + "\n".join(panels) + "\n</div>"
         else:
             items_html = []
             for idx, item in enumerate(self.items):
@@ -529,11 +515,7 @@ class AccordionBlock(Element):
                     f"  </div>\n"
                     f"</div>"
                 )
-            return (
-                f'<div class="accordion" id="{acc_id}">\n'
-                + "\n".join(items_html)
-                + "\n</div>"
-            )
+            return f'<div class="accordion" id="{acc_id}">\n' + "\n".join(items_html) + "\n</div>"
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -551,19 +533,12 @@ class AccordionBlock(Element):
 class ListGroupBlock(Element):
     """Repräsentiert eine Bootstrap List Group."""
 
-    def __init__(self, items: list[str] = None, **kwargs):
+    def __init__(self, items: list[str] | None = None, **kwargs):
         super().__init__(**kwargs)
-        self.items = (
-            items if items is not None else ["Eintrag 1", "Eintrag 2", "Eintrag 3"]
-        )
+        self.items = items if items is not None else ["Eintrag 1", "Eintrag 2", "Eintrag 3"]
 
     def render(self, version: str = "5") -> str:
-        items_html = "\n".join(
-            [
-                f'  <li class="list-group-item">{html.escape(item)}</li>'
-                for item in self.items
-            ]
-        )
+        items_html = "\n".join([f'  <li class="list-group-item">{html.escape(item)}</li>' for item in self.items])
         return f'<ul class="list-group">\n{items_html}\n</ul>'
 
     def to_dict(self) -> dict[str, Any]:
@@ -606,25 +581,21 @@ class FormInputBlock(Element):
         control_class = "form-control"
 
         label_class = "control-label" if version == "3" else "form-label"
-        label_html = (
-            f'<label for="{field_id}" class="{label_class}">{esc_label}</label>'
-        )
+        label_html = f'<label for="{field_id}" class="{label_class}">{esc_label}</label>'
 
         if self.input_type == "textarea":
             input_html = f'<textarea class="{control_class}" id="{field_id}" rows="3" placeholder="{esc_placeholder}"></textarea>'
         else:
             safe_type = _sanitize_css_class(self.input_type, "text")
-            input_html = f'<input type="{safe_type}" class="{control_class}" id="{field_id}" placeholder="{esc_placeholder}">'
+            input_html = (
+                f'<input type="{safe_type}" class="{control_class}" id="{field_id}" placeholder="{esc_placeholder}">'
+            )
 
         help_class = "help-block" if version == "3" else "form-text"
         help_html = (
             f'<span class="{help_class}" id="{field_id}-help">{esc_help}</span>'
             if (esc_help and version == "3")
-            else (
-                f'<div id="{field_id}-help" class="form-text">{esc_help}</div>'
-                if esc_help
-                else ""
-            )
+            else (f'<div id="{field_id}-help" class="form-text">{esc_help}</div>' if esc_help else "")
         )
 
         return f'<div class="{form_group_class}">\n  {label_html}\n  {input_html}\n  {help_html}\n</div>'
@@ -657,7 +628,7 @@ class NavbarBlock(Element):
     def __init__(
         self,
         brand: str = "Meine Website",
-        links: list[dict[str, str]] = None,
+        links: list[dict[str, str]] | None = None,
         bg_style: str = "dark",
         **kwargs,
     ):
@@ -683,9 +654,7 @@ class NavbarBlock(Element):
             text = html.escape(link.get("text", "Link"))
             safe_url = _sanitize_url(link.get("url", "#"), fallback="#")
             if version == "3":
-                links_html_list.append(
-                    f'        <li><a href="{safe_url}">{text}</a></li>'
-                )
+                links_html_list.append(f'        <li><a href="{safe_url}">{text}</a></li>')
             else:
                 links_html_list.append(
                     f'      <li class="nav-item"><a class="nav-link" href="{safe_url}">{text}</a></li>'
@@ -693,9 +662,7 @@ class NavbarBlock(Element):
         links_html = "\n".join(links_html_list)
 
         if version == "3":
-            nav_class = (
-                "navbar-inverse" if safe_bg in ["dark", "primary"] else "navbar-default"
-            )
+            nav_class = "navbar-inverse" if safe_bg in ["dark", "primary"] else "navbar-default"
             return (
                 f'<nav class="navbar {nav_class}">\n'
                 f'  <div class="container-fluid">\n'
@@ -757,7 +724,7 @@ class NavbarBlock(Element):
 class Column(Element):
     """Repräsentiert eine Bootstrap Spalte (z.B. col-md-6)."""
 
-    def __init__(self, span: int = 12, element_id: str = None, **kwargs):
+    def __init__(self, span: int = 12, element_id: str | None = None, **kwargs):
         super().__init__(element_id=element_id, **kwargs)
         self.span = span
         self.elements: list[Element] = []
@@ -789,10 +756,7 @@ class Column(Element):
                 break
 
     def render(self, version: str = "5") -> str:
-        rendered_elements = [
-            e.apply_spacing_to_html(e.render(version=version), version=version)
-            for e in self.elements
-        ]
+        rendered_elements = [e.apply_spacing_to_html(e.render(version=version), version=version) for e in self.elements]
         inner_html = "\n".join(rendered_elements)
         html_code = f'<div class="col-md-{self.span}">\n{inner_html}\n</div>'
         return self.apply_spacing_to_html(html_code, version=version)
@@ -858,7 +822,7 @@ class Row(Element):
 class Page(Element):
     """Das Haupt-Dokument (container)."""
 
-    def __init__(self, title: str = "Neues Projekt", element_id: str = None):
+    def __init__(self, title: str = "Neues Projekt", element_id: str | None = None):
         super().__init__(element_id)
         self.title = title
         self.rows: list[Row] = []

@@ -1,4 +1,6 @@
 import json
+import re
+
 import pytest
 from cryptography.fernet import Fernet
 
@@ -42,7 +44,7 @@ def test_decrypt_invalid_password():
     data = {"title": "Test Project"}
     encrypted = encrypt_project(data, "CorrectPassword")
 
-    with pytest.raises(ValueError, match="Falsches Passwort oder beschädigte Datei."):
+    with pytest.raises(ValueError, match=re.escape("Falsches Passwort oder beschädigte Datei.")):
         decrypt_project(encrypted, "WrongPassword")
 
 
@@ -54,15 +56,15 @@ def test_decrypt_tampered_ciphertext_integrity():
     # Letztes Byte im GCM Auth-Tag manipulieren
     encrypted[-1] ^= 0x01
 
-    with pytest.raises(ValueError, match="Falsches Passwort oder beschädigte Datei."):
+    with pytest.raises(ValueError, match=re.escape("Falsches Passwort oder beschädigte Datei.")):
         decrypt_project(bytes(encrypted), password)
 
 
 def test_decrypt_too_short_content():
-    with pytest.raises(ValueError, match="Die Datei ist zu klein, um gültig zu sein."):
+    with pytest.raises(ValueError, match=re.escape("Die Datei ist zu klein, um gültig zu sein.")):
         decrypt_project(b"short", "password")
 
-    with pytest.raises(ValueError, match="Die Datei ist zu klein, um gültig zu sein."):
+    with pytest.raises(ValueError, match=re.escape("Die Datei ist zu klein, um gültig zu sein.")):
         decrypt_project(GCM_MAGIC_HEADER + b"short", "password")
 
 
@@ -76,7 +78,29 @@ def test_decrypt_corrupted_json(monkeypatch):
         lambda self, nonce, data, associated_data: b"not a valid json string \x80\x81",
     )
 
-    with pytest.raises(
-        ValueError, match="Entschlüsselte Daten sind kein gültiges JSON-Format."
-    ):
+    with pytest.raises(ValueError, match=re.escape("Entschlüsselte Daten sind kein gültiges JSON-Format.")):
         decrypt_project(encrypted, "pass")
+
+
+def test_decrypt_legacy_fernet_wrong_password():
+    import secrets
+
+    salt = secrets.token_bytes(16)
+    key = _derive_fernet_key("CorrectPassword", salt)
+    fernet = Fernet(key)
+    legacy_encrypted = salt + fernet.encrypt(b'{"test": 123}')
+
+    with pytest.raises(ValueError, match=re.escape("Falsches Passwort oder beschädigte Datei.")):
+        decrypt_project(legacy_encrypted, "WrongPassword")
+
+
+def test_decrypt_legacy_fernet_corrupted_json():
+    import secrets
+
+    salt = secrets.token_bytes(16)
+    key = _derive_fernet_key("password", salt)
+    fernet = Fernet(key)
+    legacy_encrypted = salt + fernet.encrypt(b"not a valid json")
+
+    with pytest.raises(ValueError, match=re.escape("Entschlüsselte Daten sind kein gültiges JSON-Format.")):
+        decrypt_project(legacy_encrypted, "password")

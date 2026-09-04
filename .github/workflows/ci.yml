@@ -1,0 +1,44 @@
+name: CI - Linting, Security & Tests
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  test-and-audit:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: 'pip'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+
+      - name: Codebase Audit (Ruff)
+        run: |
+          python -m ruff check .
+
+      - name: Security Audit (Bandit)
+        run: |
+          python -m bandit -r . -x ./.venv,./build,./dist,./build_staging,./test_*.py -ll
+
+      - name: Dependency Security Audit (pip-audit)
+        run: |
+          python -m pip_audit -r requirements.txt
+
+      - name: Automated Tests (Pytest)
+        run: |
+          python -m pytest
