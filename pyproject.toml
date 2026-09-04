@@ -36,7 +36,7 @@ known-first-party = ["models", "generator", "security", "gui", "version"]
 minversion = "8.0"
 testpaths = ["."]
 python_files = ["test_*.py"]
-addopts = "-v --cov=. --cov-report=term-missing"
+addopts = "-v"
 
 [tool.coverage.run]
 omit = [
