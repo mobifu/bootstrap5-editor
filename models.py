@@ -91,6 +91,8 @@ class Element:
             return FormInputBlock.from_dict(data)
         elif element_type == "NavbarBlock":
             return NavbarBlock.from_dict(data)
+        elif element_type == "ModalBlock":
+            return ModalBlock.from_dict(data)
         elif element_type == "ListGroupBlock":
             return ListGroupBlock.from_dict(data)
         elif element_type == "Column":
@@ -717,6 +719,112 @@ class NavbarBlock(Element):
             brand=data.get("brand", "Meine Website"),
             links=data.get("links"),
             bg_style=data.get("bg_style", "dark"),
+            **cls.extract_spacing_kwargs(data),
+        )
+
+
+class ModalBlock(Element):
+    """Repräsentiert ein modales Popup-Fenster mit Trigger-Button für Bootstrap 3 und 5."""
+
+    def __init__(
+        self,
+        button_text: str = "Modal öffnen",
+        button_style: str = "primary",
+        modal_title: str = "Modal Titel",
+        modal_body: str = "Inhalt des Modalfensters",
+        close_text: str = "Schließen",
+        **kwargs,
+    ):
+        super().__init__(**kwargs)
+        self.button_text = button_text
+        self.button_style = button_style
+        self.modal_title = modal_title
+        self.modal_body = modal_body
+        self.close_text = close_text
+
+    def render(self, version: str = "5") -> str:
+        clean_id = self.id.replace("-", "")
+        modal_id = f"modal-{clean_id}"
+        esc_btn_text = html.escape(self.button_text)
+        safe_btn_style = _sanitize_css_class(self.button_style, "primary")
+        esc_title = html.escape(self.modal_title)
+        esc_body = html.escape(self.modal_body).replace("\n", "<br>")
+        esc_close = html.escape(self.close_text)
+
+        if version == "3":
+            btn_class = "btn-default" if safe_btn_style == "secondary" else f"btn-{safe_btn_style}"
+            trigger_html = (
+                f'<button type="button" class="btn {btn_class}" data-toggle="modal" data-target="#{modal_id}">\n'
+                f"  {esc_btn_text}\n"
+                f"</button>"
+            )
+            dialog_html = (
+                f'<div class="modal fade" id="{modal_id}" tabindex="-1" role="dialog" aria-labelledby="{modal_id}-label">\n'
+                f'  <div class="modal-dialog" role="document">\n'
+                f'    <div class="modal-content">\n'
+                f'      <div class="modal-header">\n'
+                f'        <button type="button" class="close" data-dismiss="modal" aria-label="Close">'
+                f'<span aria-hidden="true">&times;</span></button>\n'
+                f'        <h4 class="modal-title" id="{modal_id}-label">{esc_title}</h4>\n'
+                f"      </div>\n"
+                f'      <div class="modal-body">\n'
+                f"        <p>{esc_body}</p>\n"
+                f"      </div>\n"
+                f'      <div class="modal-footer">\n'
+                f'        <button type="button" class="btn btn-default" data-dismiss="modal">{esc_close}</button>\n'
+                f"      </div>\n"
+                f"    </div>\n"
+                f"  </div>\n"
+                f"</div>"
+            )
+        else:
+            trigger_html = (
+                f'<button type="button" class="btn btn-{safe_btn_style}" data-bs-toggle="modal" data-bs-target="#{modal_id}">\n'
+                f"  {esc_btn_text}\n"
+                f"</button>"
+            )
+            dialog_html = (
+                f'<div class="modal fade" id="{modal_id}" tabindex="-1" aria-labelledby="{modal_id}-label" aria-hidden="true">\n'
+                f'  <div class="modal-dialog">\n'
+                f'    <div class="modal-content">\n'
+                f'      <div class="modal-header">\n'
+                f'        <h5 class="modal-title" id="{modal_id}-label">{esc_title}</h5>\n'
+                f'        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>\n'
+                f"      </div>\n"
+                f'      <div class="modal-body">\n'
+                f"        <p>{esc_body}</p>\n"
+                f"      </div>\n"
+                f'      <div class="modal-footer">\n'
+                f'        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{esc_close}</button>\n'
+                f"      </div>\n"
+                f"    </div>\n"
+                f"  </div>\n"
+                f"</div>"
+            )
+
+        html_code = f"{trigger_html}\n{dialog_html}"
+        return self.apply_spacing_to_html(html_code, version=version)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "id": self.id,
+            "type": "ModalBlock",
+            "button_text": self.button_text,
+            "button_style": self.button_style,
+            "modal_title": self.modal_title,
+            "modal_body": self.modal_body,
+            "close_text": self.close_text,
+            **self.base_to_dict(),
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "ModalBlock":
+        return cls(
+            button_text=data.get("button_text", "Modal öffnen"),
+            button_style=data.get("button_style", "primary"),
+            modal_title=data.get("modal_title", "Modal Titel"),
+            modal_body=data.get("modal_body", "Inhalt des Modalfensters"),
+            close_text=data.get("close_text", "Schließen"),
             **cls.extract_spacing_kwargs(data),
         )
 

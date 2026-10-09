@@ -12,6 +12,7 @@ from models import (
     HtmlBlock,
     ImageBlock,
     ListGroupBlock,
+    ModalBlock,
     NavbarBlock,
     Page,
     Row,
@@ -185,6 +186,44 @@ def test_navbar_block():
     restored = Element.from_dict(nav.to_dict())
     assert restored.brand == "MyBrand"
     assert restored.bg_style == "dark"
+
+
+def test_modal_block():
+    modal = ModalBlock(
+        button_text="Klick mich",
+        button_style="danger",
+        modal_title="Wichtiger Hinweis",
+        modal_body="Das ist der Text im Fenster.",
+        close_text="Fertig",
+    )
+
+    # Bootstrap 5 Rendering
+    rendered_bs5 = modal.render(version="5")
+    assert "btn-danger" in rendered_bs5
+    assert 'data-bs-toggle="modal"' in rendered_bs5
+    assert f'data-bs-target="#modal-{modal.id.replace("-", "")}"' in rendered_bs5
+    assert "Wichtiger Hinweis" in rendered_bs5
+    assert "Das ist der Text im Fenster." in rendered_bs5
+    assert "btn-close" in rendered_bs5
+    assert 'data-bs-dismiss="modal"' in rendered_bs5
+    assert "Fertig" in rendered_bs5
+
+    # Bootstrap 3 Rendering
+    rendered_bs3 = modal.render(version="3")
+    assert 'data-toggle="modal"' in rendered_bs3
+    assert f'data-target="#modal-{modal.id.replace("-", "")}"' in rendered_bs3
+    assert 'class="close"' in rendered_bs3
+    assert 'data-dismiss="modal"' in rendered_bs3
+    assert "Fertig" in rendered_bs3
+
+    # Deserialisierung
+    restored = Element.from_dict(modal.to_dict())
+    assert isinstance(restored, ModalBlock)
+    assert restored.button_text == "Klick mich"
+    assert restored.button_style == "danger"
+    assert restored.modal_title == "Wichtiger Hinweis"
+    assert restored.modal_body == "Das ist der Text im Fenster."
+    assert restored.close_text == "Fertig"
 
 
 def test_column_row_page_hierarchy_and_reordering():

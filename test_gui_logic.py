@@ -8,7 +8,7 @@ from gui import (
     apply_window_icon,
     get_resource_path,
 )
-from models import Column, Page, Row, TextBlock
+from models import Column, ModalBlock, Page, Row, TextBlock
 
 
 def test_get_resource_path_standard():
@@ -180,3 +180,45 @@ def test_gui_load_project_wrong_password():
         mock_input_dlg.return_value.get_input.return_value = "FalschesPasswort"
         MainApplication.load_project(app)
         mock_error.assert_called_once()
+
+
+def test_gui_modal_block_add_and_edit():
+    app = _create_headless_app()
+    col = Column(span=12)
+
+    # 1. Hinzufügen via add_modal_to_col
+    with patch("gui.ModalDialog") as mock_modal_dlg:
+        mock_inst = MagicMock()
+        mock_inst.result_button_text = "Popup Öffnen"
+        mock_inst.result_button_style = "info"
+        mock_inst.result_modal_title = "Neuer Dialog"
+        mock_inst.result_modal_body = "Beschreibungstext"
+        mock_inst.result_close_text = "Abbrechen"
+        mock_modal_dlg.return_value = mock_inst
+
+        MainApplication.add_modal_to_col(app, col)
+        assert len(col.elements) == 1
+        modal = col.elements[0]
+        assert isinstance(modal, ModalBlock)
+        assert modal.button_text == "Popup Öffnen"
+        assert modal.button_style == "info"
+        assert modal.modal_title == "Neuer Dialog"
+        assert modal.modal_body == "Beschreibungstext"
+        assert modal.close_text == "Abbrechen"
+
+    # 2. Bearbeiten via edit_element
+    with patch("gui.ModalDialog") as mock_modal_dlg:
+        mock_inst = MagicMock()
+        mock_inst.result_button_text = "Geänderter Button"
+        mock_inst.result_button_style = "warning"
+        mock_inst.result_modal_title = "Geänderter Titel"
+        mock_inst.result_modal_body = "Neuer Inhalt"
+        mock_inst.result_close_text = "Schließen"
+        mock_modal_dlg.return_value = mock_inst
+
+        MainApplication.edit_element(app, modal)
+        assert modal.button_text == "Geänderter Button"
+        assert modal.button_style == "warning"
+        assert modal.modal_title == "Geänderter Titel"
+        assert modal.modal_body == "Neuer Inhalt"
+        assert modal.close_text == "Schließen"

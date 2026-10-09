@@ -23,6 +23,7 @@ from models import (
     HtmlBlock,
     ImageBlock,
     ListGroupBlock,
+    ModalBlock,
     NavbarBlock,
     Page,
     Row,
@@ -738,6 +739,96 @@ class NavbarDialog(ctk.CTkToplevel):
         self.destroy()
 
 
+class ModalDialog(ctk.CTkToplevel):
+    """Dialog zur Konfiguration von Bootstrap Modalfenstern."""
+
+    def __init__(
+        self,
+        master,
+        title="Modalfenster bearbeiten",
+        default_button_text="Modal öffnen",
+        default_button_style="primary",
+        default_title="Modal Titel",
+        default_body="Hier steht der Inhalt des Modalfensters.",
+        default_close="Schließen",
+    ):
+        super().__init__(master)
+        self.title(title)
+        self.geometry("520x560")
+        apply_window_icon(self)
+
+        self.result_button_text: str | None = None
+        self.result_button_style: str | None = None
+        self.result_modal_title: str | None = None
+        self.result_modal_body: str | None = None
+        self.result_close_text: str | None = None
+
+        # 1. Button-Text
+        ctk.CTkLabel(self, text="Trigger Button-Text:").pack(pady=(12, 2))
+        self.btn_text_entry = ctk.CTkEntry(self, width=440)
+        self.btn_text_entry.insert(0, default_button_text)
+        self.btn_text_entry.pack(pady=2)
+
+        # 2. Button-Stil (Farbe)
+        ctk.CTkLabel(self, text="Button-Stil (Farbe):").pack(pady=(8, 2))
+        self.style_var = ctk.StringVar(value=default_button_style)
+        self.style_menu = ctk.CTkOptionMenu(
+            self,
+            variable=self.style_var,
+            values=["primary", "secondary", "success", "danger", "warning", "info", "dark", "light"],
+        )
+        self.style_menu.pack(pady=2)
+
+        # 3. Modal-Titel
+        ctk.CTkLabel(self, text="Modal-Titel (Kopfzeile):").pack(pady=(8, 2))
+        self.title_entry = ctk.CTkEntry(self, width=440)
+        self.title_entry.insert(0, default_title)
+        self.title_entry.pack(pady=2)
+
+        # 4. Modal-Inhalt
+        ctk.CTkLabel(self, text="Modal-Inhalt (Text / Beschreibung):").pack(pady=(8, 2))
+        self.body_textbox = ctk.CTkTextbox(self, width=440, height=140)
+        self.body_textbox.insert("1.0", default_body)
+        self.body_textbox.pack(pady=2)
+
+        # 5. Schließen-Button Text
+        ctk.CTkLabel(self, text="Schließen-Button Beschriftung:").pack(pady=(8, 2))
+        self.close_entry = ctk.CTkEntry(self, width=440)
+        self.close_entry.insert(0, default_close)
+        self.close_entry.pack(pady=2)
+
+        btn_frame = ctk.CTkFrame(self, fg_color="transparent")
+        btn_frame.pack(pady=15)
+        ctk.CTkButton(btn_frame, text="Speichern", command=self.save).pack(side="left", padx=10)
+        ctk.CTkButton(
+            btn_frame,
+            text="Abbrechen",
+            command=self.cancel,
+            fg_color="red",
+            hover_color="darkred",
+        ).pack(side="left", padx=10)
+
+        self.transient(master)
+        self.grab_set()
+        self.wait_window(self)
+
+    def save(self):
+        self.result_button_text = self.btn_text_entry.get().strip() or "Modal öffnen"
+        self.result_button_style = self.style_var.get()
+        self.result_modal_title = self.title_entry.get().strip() or "Modal Titel"
+        self.result_modal_body = self.body_textbox.get("1.0", "end-1c").strip()
+        self.result_close_text = self.close_entry.get().strip() or "Schließen"
+        self.destroy()
+
+    def cancel(self):
+        self.result_button_text = None
+        self.result_button_style = None
+        self.result_modal_title = None
+        self.result_modal_body = None
+        self.result_close_text = None
+        self.destroy()
+
+
 class ElementSpacingDialog(ctk.CTkToplevel):
     def __init__(self, master, element: Element):
         super().__init__(master)
@@ -1346,6 +1437,31 @@ class HelpDialog(ctk.CTkToplevel):
                     "  Ermöglicht das Hinzufügen von Eingabefeldern (z. B. E-Mail, Text, Passwort, Textarea) inklusive Label und Hilfetexten.\n\n"
                     "• Navigationsleiste (NavbarBlock):\n"
                     "  Erstellt eine responsive Bootstrap-Headerleiste mit Shop-/Website-Namen (Brand) und frei definierbaren Navigationslinks."
+                ),
+            },
+            {
+                "category": "🧩 Bausteine im Detail",
+                "title": "Modalfenster & Popups (ModalBlock)",
+                "keywords": [
+                    "modal",
+                    "popup",
+                    "fenster",
+                    "dialog",
+                    "trigger",
+                    "button",
+                    "schließen",
+                    "hinweis",
+                ],
+                "content": (
+                    "• Modalfenster (ModalBlock):\n"
+                    "  Erstellt ein interaktives modales Dialogfenster, das sich beim Klick auf einen Trigger-Button öffnet.\n\n"
+                    "• Einstellungen:\n"
+                    "  - Button-Text & Farbe: Beschriftung und Stil des Auslöse-Knopfs.\n"
+                    "  - Modal-Titel: Die Kopfzeile des Popup-Fensters.\n"
+                    "  - Modal-Inhalt: Der Fließtext oder die Beschreibung im Dialogkörper.\n"
+                    "  - Schließen-Button: Text der Abbrechen-/Schließen-Schaltfläche.\n\n"
+                    "• Kompatibilität:\n"
+                    "  Funktioniert automatisch sowohl in Bootstrap 5 (data-bs-*) als auch in Bootstrap 3 (data-*)."
                 ),
             },
             {
@@ -2140,6 +2256,20 @@ class MainApplication(ctk.CTk):
             )
             self.update_ui()
 
+    def add_modal_to_col(self, col: Column):
+        dialog = ModalDialog(self, title="Modalfenster hinzufügen")
+        if dialog.result_button_text:
+            col.add_element(
+                ModalBlock(
+                    button_text=dialog.result_button_text,
+                    button_style=dialog.result_button_style or "primary",
+                    modal_title=dialog.result_modal_title or "Modal Titel",
+                    modal_body=dialog.result_modal_body or "Inhalt des Modalfensters",
+                    close_text=dialog.result_close_text or "Schließen",
+                )
+            )
+            self.update_ui()
+
     def show_add_element_menu(self, col: Column, widget):
         menu = tk.Menu(self, tearoff=0)
         menu.add_command(label="📝 Text", command=lambda: self.add_text_to_col(col))
@@ -2156,6 +2286,10 @@ class MainApplication(ctk.CTk):
             command=lambda: self.add_listgroup_to_col(col),
         )
         menu.add_command(label="🗂️ Akkordeon", command=lambda: self.add_accordion_to_col(col))
+        menu.add_command(
+            label="🪟 Modalfenster (Popup)",
+            command=lambda: self.add_modal_to_col(col),
+        )
         menu.add_separator()
         menu.add_command(
             label="📝 Formularfeld (Input)",
@@ -2290,6 +2424,23 @@ class MainApplication(ctk.CTk):
                 element.brand = dialog.result_brand
                 element.bg_style = dialog.result_bg or "light"
                 element.links = dialog.result_links or []
+                self.update_ui()
+        elif isinstance(element, ModalBlock):
+            dialog = ModalDialog(
+                self,
+                title="Modalfenster bearbeiten",
+                default_button_text=element.button_text,
+                default_button_style=element.button_style,
+                default_title=element.modal_title,
+                default_body=element.modal_body,
+                default_close=element.close_text,
+            )
+            if dialog.result_button_text is not None:
+                element.button_text = dialog.result_button_text
+                element.button_style = dialog.result_button_style or "primary"
+                element.modal_title = dialog.result_modal_title or "Modal Titel"
+                element.modal_body = dialog.result_modal_body or "Inhalt des Modalfensters"
+                element.close_text = dialog.result_close_text or "Schließen"
                 self.update_ui()
 
     def edit_element_spacing(self, element: Element):
@@ -2479,6 +2630,31 @@ class MainApplication(ctk.CTk):
                             el_frame,
                             text=f"[Liste] ({len(el.items)} Einträge)",
                             text_color="#444444",
+                        ).pack(side="left", padx=5)
+                    elif isinstance(el, FormInputBlock):
+                        ctk.CTkLabel(
+                            el_frame,
+                            text=f"[Feld:{el.input_type}] {el.label}",
+                            text_color="#2b580c",
+                        ).pack(side="left", padx=5)
+                    elif isinstance(el, NavbarBlock):
+                        ctk.CTkLabel(
+                            el_frame,
+                            text=f"[Navbar] {el.brand}",
+                            text_color="#1b262c",
+                        ).pack(side="left", padx=5)
+                    elif isinstance(el, ModalBlock):
+                        display_text = el.modal_title[:15] + "..." if len(el.modal_title) > 15 else el.modal_title
+                        ctk.CTkLabel(
+                            el_frame,
+                            text=f"[Modal] {display_text}",
+                            text_color="#0f4c81",
+                        ).pack(side="left", padx=5)
+                    else:
+                        ctk.CTkLabel(
+                            el_frame,
+                            text="[Element]",
+                            text_color="black",
                         ).pack(side="left", padx=5)
 
                     btn_actions_frame = ctk.CTkFrame(el_frame, fg_color="transparent")

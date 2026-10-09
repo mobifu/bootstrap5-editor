@@ -95,6 +95,13 @@ class HTMLConverter:
         (re.compile(r"\bdata-dismiss\b="), "data-bs-dismiss="),
         (re.compile(r"\bdata-slide\b="), "data-bs-slide="),
         (re.compile(r"\bdata-ride\b="), "data-bs-ride="),
+        (
+            re.compile(
+                r'<button\b[^>]*class="close"[^>]*data-(?:bs-)?dismiss="modal"[^>]*>.*?</button>',
+                re.DOTALL | re.IGNORECASE,
+            ),
+            '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>',
+        ),
     ]
 
     _TAG_PATTERNS = {

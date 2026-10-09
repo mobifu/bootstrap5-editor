@@ -12,6 +12,7 @@ from models import (
     HtmlBlock,
     ImageBlock,
     ListGroupBlock,
+    ModalBlock,
     Page,
     Row,
     TableBlock,
@@ -120,6 +121,17 @@ class TestBootstrapGenerator(unittest.TestCase):
         self.assertIn('class="img-fluid mx-auto d-block"', converted)
         self.assertTrue(converted.endswith("/>"))
 
+        bs3_modal = (
+            '<button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal">Open</button>\n'
+            '<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>'
+        )
+        converted_modal = HTMLConverter.convert_bs3_to_bs5(bs3_modal)
+        self.assertIn('data-bs-toggle="modal"', converted_modal)
+        self.assertIn('data-bs-target="#myModal"', converted_modal)
+        self.assertIn("btn-secondary", converted_modal)
+        self.assertIn('class="btn-close"', converted_modal)
+        self.assertIn('data-bs-dismiss="modal"', converted_modal)
+
     def test_new_bootstrap_blocks(self):
         page = Page("Neue Blöcke Test")
         row = Row()
@@ -130,6 +142,7 @@ class TestBootstrapGenerator(unittest.TestCase):
         col.add_element(BadgeBlock(text="Neu", style="danger"))
         col.add_element(AccordionBlock(items=[{"title": "Acc 1", "content": "Inhalt 1"}]))
         col.add_element(ListGroupBlock(items=["Punkt 1", "Punkt 2"]))
+        col.add_element(ModalBlock(button_text="Infofenster", modal_title="Modal Info", close_text="Zu"))
 
         row.add_column(col)
         page.add_row(row)
@@ -141,12 +154,17 @@ class TestBootstrapGenerator(unittest.TestCase):
         self.assertIn('<span class="badge bg-danger">Neu</span>', html_bs5)
         self.assertIn('class="accordion"', html_bs5)
         self.assertIn('<ul class="list-group">', html_bs5)
+        self.assertIn('data-bs-toggle="modal"', html_bs5)
+        self.assertIn("Modal Info", html_bs5)
+        self.assertIn('data-bs-dismiss="modal"', html_bs5)
 
         # BS3 Check
         html_bs3 = HTMLGenerator.generate_html(page, bootstrap_version="3")
         self.assertIn('<div class="panel panel-primary">', html_bs3)
         self.assertIn('<span class="label label-danger">Neu</span>', html_bs3)
         self.assertIn('class="panel-group"', html_bs3)
+        self.assertIn('data-toggle="modal"', html_bs3)
+        self.assertIn('data-dismiss="modal"', html_bs3)
 
     def test_element_spacing(self):
         btn = ButtonBlock(

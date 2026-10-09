@@ -41,6 +41,7 @@ Die meisten Web-Baukästen erzeugen unübersichtlichen Spaghetti-Code oder binde
   - Flexible Grid-Systeme (1–4 Spalten mit individuellem Breiten- & Offset-Management)
   - Hero-Banner, Call-to-Actions & Akkordeons / FAQ-Sektionen
   - Feature-Cards, Listen, Tabellen & responsive Navigationsleisten
+  - Interaktive Modalfenster / Popup-Dialoge mit Trigger-Buttons für Bootstrap 5 & 3
 - **1-Klick HTML Export**: Fertigen HTML-Code direkt in die Zwischenablage kopieren oder als Datei speichern.
 - **Projektverwaltung**: Projekte speichern, laden und nahtlos weiterbearbeiten.
 
@@ -84,7 +85,7 @@ python app.py
 
 ### Lokale Tests & Code-Audits
 ```powershell
-# 1. Automatisierte Tests (48 Unit- & Controller-Tests inkl. Coverage)
+# 1. Automatisierte Tests (50 Unit- & Controller-Tests inkl. Coverage)
 python -m pytest
 
 # 2. Typprüfung (Mypy)
