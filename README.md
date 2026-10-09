@@ -84,16 +84,19 @@ python app.py
 
 ### Lokale Tests & Code-Audits
 ```powershell
-# 1. Automatisierte Tests (46 Unit- & Controller-Tests inkl. Coverage)
+# 1. Automatisierte Tests (48 Unit- & Controller-Tests inkl. Coverage)
 python -m pytest
 
-# 2. Codebase Audit (Ruff Linter & Formatter)
+# 2. Typprüfung (Mypy)
+python -m mypy security.py models.py generator.py version.py app.py gui.py
+
+# 3. Codebase Audit (Ruff Linter & Formatter)
 python -m ruff check .
 
-# 3. Security Audit (Bandit Static Analysis)
+# 4. Security Audit (Bandit Static Analysis)
 python -m bandit -r . -x ./.venv,./build,./dist,./build_staging,./test_*.py -ll
 
-# 4. Dependency Vulnerability Audit (pip-audit)
+# 5. Dependency Vulnerability Audit (pip-audit)
 python -m pip_audit -r requirements.txt
 ```
 

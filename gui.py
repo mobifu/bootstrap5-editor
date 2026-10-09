@@ -1542,10 +1542,16 @@ class HelpDialog(ctk.CTkToplevel):
 
         filtered = []
         for sec in self.sections_data:
-            match_title = query in sec["title"].lower()
-            match_content = query in sec["content"].lower()
-            match_category = query in sec["category"].lower()
-            match_keywords = any(query in kw for kw in sec["keywords"])
+            sec_title = str(sec.get("title", ""))
+            sec_content = str(sec.get("content", ""))
+            sec_category = str(sec.get("category", ""))
+            sec_keywords = sec.get("keywords", [])
+            match_title = query in sec_title.lower()
+            match_content = query in sec_content.lower()
+            match_category = query in sec_category.lower()
+            match_keywords = (
+                any(query in str(kw).lower() for kw in sec_keywords) if isinstance(sec_keywords, list) else False
+            )
 
             if match_title or match_content or match_category or match_keywords:
                 filtered.append(sec)
@@ -1656,9 +1662,9 @@ class HelpDialog(ctk.CTkToplevel):
                     current_cat = sec["category"]
                     story.append(Paragraph(current_cat, category_style))
 
-                story.append(Paragraph(sec["title"], section_title_style))
+                story.append(Paragraph(str(sec["title"]), section_title_style))
 
-                lines = sec["content"].split("\n")
+                lines = str(sec["content"]).split("\n")
                 formatted_lines = []
                 for line in lines:
                     safe_line = line.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
@@ -1701,7 +1707,7 @@ class HelpDialog(ctk.CTkToplevel):
                         current_cat = sec["category"]
                         html_content += f"<h2>{current_cat}</h2>\n"
 
-                    content_html = sec["content"].replace("\n", "<br>")
+                    content_html = str(sec["content"]).replace("\n", "<br>")
                     html_content += f"""<div class="card">
     <h3>{sec["title"]}</h3>
     <p>{content_html}</p>
@@ -2055,8 +2061,8 @@ class MainApplication(ctk.CTk):
             col.add_element(
                 ButtonBlock(
                     text=dialog.result_text,
-                    url=dialog.result_url,
-                    style=dialog.result_style,
+                    url=dialog.result_url or "#",
+                    style=dialog.result_style or "primary",
                 )
             )
             self.update_ui()
@@ -2064,7 +2070,7 @@ class MainApplication(ctk.CTk):
     def add_alert_to_col(self, col: Column):
         dialog = AlertSelectionDialog(self, title="Hinweisbox (Alert) hinzufügen")
         if dialog.result_text:
-            col.add_element(AlertBlock(text=dialog.result_text, style=dialog.result_style))
+            col.add_element(AlertBlock(text=dialog.result_text, style=dialog.result_style or "info"))
             self.update_ui()
 
     def add_html_to_col(self, col: Column):
@@ -2085,8 +2091,8 @@ class MainApplication(ctk.CTk):
             col.add_element(
                 CardBlock(
                     title=dialog.result_title,
-                    content=dialog.result_content,
-                    style=dialog.result_style,
+                    content=dialog.result_content or "",
+                    style=dialog.result_style or "default",
                 )
             )
             self.update_ui()
@@ -2094,7 +2100,7 @@ class MainApplication(ctk.CTk):
     def add_badge_to_col(self, col: Column):
         dialog = BadgeDialog(self, title="Badge / Label hinzufügen")
         if dialog.result_text:
-            col.add_element(BadgeBlock(text=dialog.result_text, style=dialog.result_style))
+            col.add_element(BadgeBlock(text=dialog.result_text, style=dialog.result_style or "primary"))
             self.update_ui()
 
     def add_listgroup_to_col(self, col: Column):
@@ -2115,9 +2121,9 @@ class MainApplication(ctk.CTk):
             col.add_element(
                 FormInputBlock(
                     label=dialog.result_label,
-                    input_type=dialog.result_type,
-                    placeholder=dialog.result_placeholder,
-                    help_text=dialog.result_help,
+                    input_type=dialog.result_type or "text",
+                    placeholder=dialog.result_placeholder or "",
+                    help_text=dialog.result_help or "",
                 )
             )
             self.update_ui()
@@ -2128,8 +2134,8 @@ class MainApplication(ctk.CTk):
             col.add_element(
                 NavbarBlock(
                     brand=dialog.result_brand,
-                    bg_style=dialog.result_bg,
-                    links=dialog.result_links,
+                    bg_style=dialog.result_bg or "light",
+                    links=dialog.result_links or [],
                 )
             )
             self.update_ui()
@@ -2190,8 +2196,8 @@ class MainApplication(ctk.CTk):
             )
             if dialog.result_text is not None:
                 element.text = dialog.result_text
-                element.url = dialog.result_url
-                element.style = dialog.result_style
+                element.url = dialog.result_url or "#"
+                element.style = dialog.result_style or "primary"
                 self.update_ui()
         elif isinstance(element, AlertBlock):
             dialog = AlertSelectionDialog(
@@ -2202,7 +2208,7 @@ class MainApplication(ctk.CTk):
             )
             if dialog.result_text is not None:
                 element.text = dialog.result_text
-                element.style = dialog.result_style
+                element.style = dialog.result_style or "info"
                 self.update_ui()
         elif isinstance(element, HtmlBlock):
             dialog = HtmlInputDialog(self, title="HTML-Code bearbeiten", default_code=element.code)
@@ -2231,8 +2237,8 @@ class MainApplication(ctk.CTk):
             )
             if dialog.result_title is not None:
                 element.title = dialog.result_title
-                element.content = dialog.result_content
-                element.style = dialog.result_style
+                element.content = dialog.result_content or ""
+                element.style = dialog.result_style or "default"
                 self.update_ui()
         elif isinstance(element, BadgeBlock):
             dialog = BadgeDialog(
@@ -2243,7 +2249,7 @@ class MainApplication(ctk.CTk):
             )
             if dialog.result_text is not None:
                 element.text = dialog.result_text
-                element.style = dialog.result_style
+                element.style = dialog.result_style or "primary"
                 self.update_ui()
         elif isinstance(element, ListGroupBlock):
             items_str = "\n".join(element.items)
@@ -2267,9 +2273,9 @@ class MainApplication(ctk.CTk):
             )
             if dialog.result_label is not None:
                 element.label = dialog.result_label
-                element.input_type = dialog.result_type
-                element.placeholder = dialog.result_placeholder
-                element.help_text = dialog.result_help
+                element.input_type = dialog.result_type or "text"
+                element.placeholder = dialog.result_placeholder or ""
+                element.help_text = dialog.result_help or ""
                 self.update_ui()
         elif isinstance(element, NavbarBlock):
             links_str = "\n".join([f"{link.get('text', '')} | {link.get('url', '#')}" for link in element.links])
@@ -2282,8 +2288,8 @@ class MainApplication(ctk.CTk):
             )
             if dialog.result_brand is not None:
                 element.brand = dialog.result_brand
-                element.bg_style = dialog.result_bg
-                element.links = dialog.result_links
+                element.bg_style = dialog.result_bg or "light"
+                element.links = dialog.result_links or []
                 self.update_ui()
 
     def edit_element_spacing(self, element: Element):
@@ -2363,7 +2369,7 @@ class MainApplication(ctk.CTk):
             # Row Header
             row_header = ctk.CTkFrame(row_frame, fg_color="transparent")
             row_header.pack(fill="x", padx=5, pady=2)
-            ctk.CTkLabel(row_header, text=f"Zeile {r_idx+1}", text_color="black").pack(side="left")
+            ctk.CTkLabel(row_header, text=f"Zeile {r_idx + 1}", text_color="black").pack(side="left")
 
             btn_frame_row = ctk.CTkFrame(row_header, fg_color="transparent")
             btn_frame_row.pack(side="right")

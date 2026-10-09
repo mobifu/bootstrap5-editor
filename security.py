@@ -78,7 +78,10 @@ def decrypt_project(encrypted_content: bytes, password: str) -> dict:
 
         try:
             decrypted_data = aesgcm.decrypt(nonce, ciphertext, None)
-            return json.loads(decrypted_data.decode("utf-8"))
+            parsed = json.loads(decrypted_data.decode("utf-8"))
+            if not isinstance(parsed, dict):
+                raise ValueError("Entschlüsselte Daten stellen kein gültiges Projekt-Objekt dar.")
+            return parsed
         except InvalidTag as err:
             raise ValueError("Falsches Passwort oder beschädigte Datei.") from err
         except (json.JSONDecodeError, UnicodeDecodeError) as err:
@@ -95,7 +98,10 @@ def decrypt_project(encrypted_content: bytes, password: str) -> dict:
 
     try:
         decrypted_data = fernet.decrypt(actual_encrypted_data)
-        return json.loads(decrypted_data.decode("utf-8"))
+        parsed = json.loads(decrypted_data.decode("utf-8"))
+        if not isinstance(parsed, dict):
+            raise ValueError("Entschlüsselte Daten stellen kein gültiges Projekt-Objekt dar.")
+        return parsed
     except (InvalidKey, InvalidToken) as err:
         raise ValueError("Falsches Passwort oder beschädigte Datei.") from err
     except (json.JSONDecodeError, UnicodeDecodeError) as err:

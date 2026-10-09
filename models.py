@@ -815,7 +815,9 @@ class Row(Element):
     def from_dict(cls, data: dict[str, Any]) -> "Row":
         row = cls(**cls.extract_spacing_kwargs(data))
         for c_data in data.get("columns", []):
-            row.add_column(Element.from_dict(c_data))
+            col_elem = Element.from_dict(c_data)
+            if isinstance(col_elem, Column):
+                row.add_column(col_elem)
         return row
 
 
@@ -864,5 +866,7 @@ class Page(Element):
     def from_dict(cls, data: dict[str, Any]) -> "Page":
         page = cls(title=data.get("title", "Neues Projekt"), element_id=data.get("id"))
         for r_data in data.get("rows", []):
-            page.add_row(Element.from_dict(r_data))
+            row_elem = Element.from_dict(r_data)
+            if isinstance(row_elem, Row):
+                page.add_row(row_elem)
         return page

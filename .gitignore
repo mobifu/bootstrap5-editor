@@ -16,6 +16,7 @@ __pycache__/
 *.bak
 *.local
 settings.json
+sichern.py
 
 # Build, Packaging & Specs
 build/
